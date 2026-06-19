@@ -1,0 +1,7 @@
+services:
+ postgres:
+  image: postgres:17
+  environment:
+   POSTGRES_DB: radiology
+   POSTGRES_USER: radiology
+   POSTGRES_PASSWORD: radiology

@@ -1,0 +1,33 @@
+<div class="login-container">
+  <h2>Accedi al Sistema</h2>
+
+  <form (ngSubmit)="login()" #loginForm="ngForm">
+
+    <div class="form-group">
+      <label for="username">Username</label>
+      <input
+        type="text"
+        id="username"
+        name="username"
+        [(ngModel)]="username"
+        required
+        placeholder="Inserisci il tuo username">
+    </div>
+
+    <div class="form-group">
+      <label for="password">Password</label>
+      <input
+        type="password"
+        id="password"
+        name="password"
+        [(ngModel)]="password"
+        required
+        placeholder="Inserisci la tua password">
+    </div>
+
+    <button type="submit" [disabled]="!loginForm.form.valid" class="btn-login">
+      Login
+    </button>
+
+  </form>
+</div>
