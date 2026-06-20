@@ -2,11 +2,12 @@ import { Component, signal, ChangeDetectorRef, inject } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { httpResource } from '@angular/common/http';
 import { rxResource } from '@angular/core/rxjs-interop';
+import { CreaAttrezzaturaComponent } from '../crea-attrezzatura/crea-attrezzatura';
 
 @Component({
   standalone: true,
   selector: 'app-lista-organizzazioni',
-  imports: [],
+  imports: [CreaAttrezzaturaComponent],
   templateUrl: './lista-organizzazioni.html',
   styleUrl: './lista-organizzazioni.css',
 })
@@ -15,9 +16,7 @@ export class ListaOrganizzazioniComponent { // 🚀 1. Implementiamo OnInit per 
   // Usiamo lo stile moderno con inject() al posto del costruttore classico
   private http = inject(HttpClient);
 
-  organizationsResource = httpResource<any[]>(() => `http://localhost:8080/api/organizzazioni`);
-
-  organizations: any[] = [];
+  organizations = httpResource<any[]>(() => `http://localhost:8080/api/organizzazioni`);
   organization = signal<any>(null);
   private cdr = inject(ChangeDetectorRef);
 

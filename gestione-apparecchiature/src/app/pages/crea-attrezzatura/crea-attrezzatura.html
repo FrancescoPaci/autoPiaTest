@@ -1,0 +1,73 @@
+<p>crea-applicazione works!</p>
+@if (organizations()) {
+<div class="form-container">
+  <h2>Nuova Apparecchiatura</h2>
+
+  <form action="/api/apparecchiature" method="POST" id="apparecchiaturaForm">
+
+    <div class="form-group">
+      <label for="nome">Nome Apparecchiatura</label>
+      <input type="text" id="nome" name="nome" required>
+    </div>
+
+    <div class="form-group">
+      <label for="tipologia">Tipologia</label>
+      <select id="tipologia" name="tipologia" required>
+        <option value="" disabled selected>Seleziona una tipologia...</option>
+        <option value="TAC">TAC</option>
+        <option value="Risonanza">Risonanza Magnetica</option>
+        <option value="RX">RX</option>
+        <option value="Ecografo">Ecografo</option>
+        <option value="Mammografo">Mammografo</option>
+      </select>
+    </div>
+
+    <div class="form-group">
+      <label for="numeroSerie">Numero di Serie</label>
+      <input type="text" id="numeroSerie" name="numeroSerie" required>
+    </div>
+
+    <div class="form-group">
+      <label for="dataInstallazione">Data di Installazione</label>
+      <input type="date" id="dataInstallazione" name="dataInstallazione" required>
+    </div>
+
+    <div class="divider">
+      <hr>
+      <span>Posizionamento (Alternativo)</span>
+    </div>
+
+    <div class="form-group">
+      <label>ID Organizzazione</label>
+      <select
+        id="idOrganizzazione"
+        name="organizzazione" class="form-select"
+        [(ngModel)]="selectedOrganizationId">
+        <option [value]="null">Seleziona un'organizzazione...</option>
+        @for (org of listaOrganizations(); track org.id) {
+        <option [value]="org.id">{{ org.nome }}</option>
+        }
+      </select>
+      <div class="note">Assegna l'apparecchiatura direttamente a un'organizzazione.</div>
+    </div>
+
+    <div class="divider" style="margin: 10px 0;"><span style="font-size: 10px; top: -8px;">oppure</span></div>
+
+    <div class="form-group">
+      <label>Ordine/ID Contenitore</label>
+      <select
+        id="idContenitore"
+        name="contenitore" class="form-select"
+        [(ngModel)]="selectedContainerId">
+        <option [value]="null">Seleziona un contenitore...</option>
+        @for (cont of listaContenitori(); track cont.id) {
+        <option [value]="cont.id">{{ cont.nome }}</option>
+        }
+      </select>
+      <div class="note">Assegna l'apparecchiatura a un contenitore specifico.</div>
+    </div>
+
+    <button type="submit" class="btn-submit">Salva Apparecchiatura</button>
+  </form>
+</div>
+}

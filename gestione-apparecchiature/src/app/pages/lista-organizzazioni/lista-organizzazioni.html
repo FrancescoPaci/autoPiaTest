@@ -1,20 +1,21 @@
-<p>lista-organizzazioni works!</p>
+<p>Lista organizzazioni</p>
 
-@if (organizationsResource.isLoading()) {
+@if (organizations.isLoading()) {
 <div class="loading-spinner">
   <p>Caricamento organizzazioni in corso...</p>
 </div>
 }
 
-@else if (organizationsResource.error()) {
+@else if (organizations.error()) {
 <div class="error-message">
   <p>Si è verificato un errore durante il recupero dei dati dal backend.</p>
 </div>
 }
 
 @else {
+<app-crea-attrezzatura [organizations]="organizations.value()"></app-crea-attrezzatura>
 <ul>
-  @for (org of organizationsResource.value(); track org.id) {
+  @for (org of organizations.value(); track org.id) {
   <li>
     <strong>{{ org.nome }}</strong> -
     <button class="btn btn-primary" (click)="loadTree(org.id)">
