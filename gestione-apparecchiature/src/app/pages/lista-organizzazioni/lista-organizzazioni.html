@@ -16,10 +16,78 @@
 <ul>
   @for (org of organizationsResource.value(); track org.id) {
   <li>
-    <strong>{{ org.nome }}</strong> - Codice: {{ org.id }}
+    <strong>{{ org.nome }}</strong> -
+    <button class="btn btn-primary" (click)="loadTree(org.id)">
+      Carica Albero
+    </button>
   </li>
   } @empty {
   <li>Non ci sono organizzazioni disponibili nel sistema.</li>
   }
 </ul>
+}
+
+@if (organization(); as org) {
+<div class="organizzazione-container">
+  <h2>{{ org.nome }} (ID: {{ org.id }})</h2>
+  <hr>
+
+  <div class="row">
+
+    <div class="col-md-8">
+      <h3>Contenitori</h3>
+
+      @for (cont of org.contenitori; track cont.id; let i = $index) {
+      <div class="card mb-3 shadow-sm border-primary" [style.paddingLeft.px]="i * 25">
+        <div class="card-header bg-light">
+          <strong>📦 {{ cont.nome }}</strong> (Ordine: {{ cont.ordine }})
+        </div>
+        <div class="card-body">
+
+          <h5>Apparecchiature nel contenitore:</h5>
+          @if (cont.apparecchiature && cont.apparecchiature.length > 0) {
+          <ul class="list-group">
+            @for (app of cont.apparecchiature; track app.id) {
+            <li class="list-group-item d-flex justify-content-between align-items-center">
+              <div>
+                <strong>{{ app.nome }}</strong>
+                <small class="text-muted"> - S/N: {{ app.numeroSerie }}</small>
+              </div>
+              <span class="badge bg-info text-dark">{{ app.tipologia }}</span>
+            </li>
+            }
+          </ul>
+          } @else {
+          <p class="text-muted small">Nessuna apparecchiatura in questo contenitore.</p>
+          }
+
+        </div>
+      </div>
+      } @empty {
+      <p class="alert alert-warning">Nessun contenitore presente per questa organizzazione.</p>
+      }
+    </div>
+
+    <div class="col-md-4">
+      <h3>Apparecchiature Dirette</h3>
+
+      @if (org.apparecchiatureDirette && org.apparecchiatureDirette.length > 0) {
+      <ul class="list-group">
+        @for (appDiretta of org.apparecchiatureDirette; track appDiretta.id) {
+        <li class="list-group-item border-warning">
+          <strong>⚙️ {{ appDiretta.nome }}</strong>
+          <br>
+          <small class="text-muted">Tipo: {{ appDiretta.tipologia }}</small>
+        </li>
+        }
+      </ul>
+      } @else {
+      <div class="alert alert-light border text-muted">
+        ℹ️ Nessuna apparecchiatura collegata direttamente alla radice.
+      </div>
+      }
+    </div>
+
+  </div>
+</div>
 }

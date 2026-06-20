@@ -1,6 +1,7 @@
-import { Component, inject } from '@angular/core';
+import { Component, signal, ChangeDetectorRef, inject } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { httpResource } from '@angular/common/http';
+import { rxResource } from '@angular/core/rxjs-interop';
 
 @Component({
   standalone: true,
@@ -17,17 +18,23 @@ export class ListaOrganizzazioniComponent { // 🚀 1. Implementiamo OnInit per 
   organizationsResource = httpResource<any[]>(() => `http://localhost:8080/api/organizzazioni`);
 
   organizations: any[] = [];
-  organization: any = null;
+  organization = signal<any>(null);
+  private cdr = inject(ChangeDetectorRef);
 
   loadTree(id: number) {
     this.http.get<any>(`http://localhost:8080/api/organizzazioni/${id}/tree`).subscribe({
-      next: (response) => {
-        this.organization = response;
-        console.log('Albero caricato:', this.organization);
+      next: (res) => {
+        if (res && res.contenitori) {
+            res.contenitori.sort((a: any, b: any) => a.ordine - b.ordine);
+        }
+        this.organization.set({ ...res });
+
+        // 3. 🚀 FORZA L'AGGIORNAMENTO: Dice ad Angular di ridisegnare la pagina ADESSO
+        this.cdr.detectChanges();
+
+        console.log('Albero caricato:', res);
       },
-      error: (err) => {
-        console.error('Errore durante il caricamento dell\'albero:', err);
-      }
+      error: (err) => console.error(err)
     });
   }
 
