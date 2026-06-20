@@ -13,7 +13,12 @@
 }
 
 @else {
+<button class="btn btn-primary" (click)="creaAttrezzatura = !creaAttrezzatura">
+  Crea nuova apparecchiatura
+</button>
+@if (creaAttrezzatura) {
 <app-crea-attrezzatura [organizations]="organizations.value()"></app-crea-attrezzatura>
+}
 <ul>
   @for (org of organizations.value(); track org.id) {
   <li>

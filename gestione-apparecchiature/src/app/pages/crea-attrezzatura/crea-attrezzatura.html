@@ -1,73 +1,115 @@
-<p>crea-applicazione works!</p>
 @if (organizations()) {
 <div class="form-container">
-  <h2>Nuova Apparecchiatura</h2>
 
-  <form action="/api/apparecchiature" method="POST" id="apparecchiaturaForm">
+  <form (ngSubmit)="salva()" #apparecchiaturaForm="ngForm">
 
-    <div class="form-group">
-      <label for="nome">Nome Apparecchiatura</label>
-      <input type="text" id="nome" name="nome" required>
-    </div>
+    <table class="table-form">
+      <tbody>
+      <tr>
+        <td colspan="2" style="font-weight: bold; font-size: 1.2rem; padding-bottom: 15px;">
+          Nuova Apparecchiatura
+        </td>
+      </tr>
 
-    <div class="form-group">
-      <label for="tipologia">Tipologia</label>
-      <select id="tipologia" name="tipologia" required>
-        <option value="" disabled selected>Seleziona una tipologia...</option>
-        <option value="TAC">TAC</option>
-        <option value="Risonanza">Risonanza Magnetica</option>
-        <option value="RX">RX</option>
-        <option value="Ecografo">Ecografo</option>
-        <option value="Mammografo">Mammografo</option>
-      </select>
-    </div>
+      <tr>
+        <td><label for="nome">Nome</label></td>
+        <td>
+          <input type="text" id="nome" name="nome" [(ngModel)]="attrezzatura.nome" required>
+        </td>
+      </tr>
 
-    <div class="form-group">
-      <label for="numeroSerie">Numero di Serie</label>
-      <input type="text" id="numeroSerie" name="numeroSerie" required>
-    </div>
+      <tr>
+        <td><label for="tipologia">Tipologia</label></td>
+        <td>
+          <select id="tipologia" name="tipologia" [(ngModel)]="attrezzatura.tipologia" required>
+            <option value="" disabled selected>Seleziona una tipologia...</option>
+            <option value="TAC">TAC</option>
+            <option value="Risonanza">Risonanza Magnetica</option>
+            <option value="RX">RX</option>
+            <option value="Ecografo">Ecografo</option>
+            <option value="Mammografo">Mammografo</option>
+          </select>
+        </td>
+      </tr>
 
-    <div class="form-group">
-      <label for="dataInstallazione">Data di Installazione</label>
-      <input type="date" id="dataInstallazione" name="dataInstallazione" required>
-    </div>
+      <tr>
+        <td><label for="numeroSerie">Numero di Serie</label></td>
+        <td>
+          <input type="text" id="numeroSerie" name="numeroSerie" [(ngModel)]="attrezzatura.numeroSerie" required>
+        </td>
+      </tr>
 
-    <div class="divider">
-      <hr>
-      <span>Posizionamento (Alternativo)</span>
-    </div>
+      <tr>
+        <td><label for="dataInstallazione">Data di Installazione</label></td>
+        <td>
+          <input type="date" id="dataInstallazione" name="dataInstallazione" [(ngModel)]="attrezzatura.dataInstallazione" required>
+        </td>
+      </tr>
 
-    <div class="form-group">
-      <label>ID Organizzazione</label>
-      <select
-        id="idOrganizzazione"
-        name="organizzazione" class="form-select"
-        [(ngModel)]="selectedOrganizationId">
-        <option [value]="null">Seleziona un'organizzazione...</option>
-        @for (org of listaOrganizations(); track org.id) {
-        <option [value]="org.id">{{ org.nome }}</option>
-        }
-      </select>
-      <div class="note">Assegna l'apparecchiatura direttamente a un'organizzazione.</div>
-    </div>
+      <tr>
+        <td colspan="2" style="padding: 15px 8px 5px 8px;">
+          <div class="divider" style="position: relative; text-align: center;">
+            <hr>
+            <span style="background: #fff; padding: 0 10px; position: relative; top: -12px; font-size: 14px; color: #666;">
+                Posizionamento (Alternativo)
+            </span>
+          </div>
+        </td>
+      </tr>
 
-    <div class="divider" style="margin: 10px 0;"><span style="font-size: 10px; top: -8px;">oppure</span></div>
+      <tr>
+        <td>
+          <label for="organizzazione" class="form-label">Organizzazione</label>
+        </td>
+        <td>
+          <select
+            id="organizzazione"
+            name="organizzazione"
+            class="form-select"
+            style="width: 100%;"
+            [(ngModel)]="selectedOrganizationId"
+            [disabled]="isOrganizationDisabled()"
+            [required]="selectedContainerId() === null"
+            (ngModelChange)="onOrganizationChange($event)">
 
-    <div class="form-group">
-      <label>Ordine/ID Contenitore</label>
-      <select
-        id="idContenitore"
-        name="contenitore" class="form-select"
-        [(ngModel)]="selectedContainerId">
-        <option [value]="null">Seleziona un contenitore...</option>
-        @for (cont of listaContenitori(); track cont.id) {
-        <option [value]="cont.id">{{ cont.nome }}</option>
-        }
-      </select>
-      <div class="note">Assegna l'apparecchiatura a un contenitore specifico.</div>
-    </div>
+            <option [ngValue]="null">Seleziona un'organizzazione...</option>
+            @for (org of listaOrganizations(); track org.id) {
+            <option [value]="org.id">{{ org.nome }}</option>
+            }
+          </select>
+        </td>
+      </tr>
 
-    <button type="submit" class="btn-submit">Salva Apparecchiatura</button>
+      <tr>
+        <td><label for="contenitore" class="form-label">Contenitore</label></td>
+        <td>
+          <select
+            id="contenitore"
+            name="contenitore"
+            class="form-select"
+            style="width: 100%;"
+            [(ngModel)]="selectedContainerId"
+            [disabled]="isContainerDisabled()"
+            [required]="selectedOrganizationId() === null"
+            (ngModelChange)="onContainerChange($event)">
+
+            <option [ngValue]="null">Seleziona un contenitore...</option>
+            @for (cont of listaContenitori(); track cont.id) {
+            <option [value]="cont.id">{{ cont.nome }}</option>
+            }
+          </select>
+        </td>
+      </tr>
+
+      <tr>
+        <td colspan="2" style="text-align: right; padding-top: 15px;">
+          <button type="submit" class="btn-submit" [disabled]="!apparecchiaturaForm.valid">
+            Salva Apparecchiatura
+          </button>
+        </td>
+      </tr>
+      </tbody>
+    </table>
   </form>
 </div>
 }

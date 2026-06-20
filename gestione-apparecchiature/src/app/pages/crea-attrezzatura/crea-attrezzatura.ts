@@ -1,5 +1,7 @@
-import { Component, input, computed, signal, effect } from '@angular/core';
+import { Component, input, computed, signal, inject } from '@angular/core';
 import { FormsModule } from '@angular/forms';
+import { HttpClient } from '@angular/common/http';
+import { Apparecchiatura } from '../../models/apparecchiatura.model';
 
 @Component({
   standalone: true,
@@ -10,40 +12,90 @@ import { FormsModule } from '@angular/forms';
 })
 export class CreaAttrezzaturaComponent {
 
-    organizations = input<any>(null);
+  organizations = input<any>(null);
+  private http = inject(HttpClient);
 
-  constructor() {
-      // 🚀 L'effetto "ascolta" il signal e logga AUTOMATICAMENTE ogni volta che cambia!
-      effect(() => {
-        console.log('Organizations è cambiato! Nuovo valore:', this.organizations());
-      });
-    }
+  // 🚀 Il tuo oggetto inizializzato pronto a raccogliere i dati del form
+attrezzatura: Apparecchiatura = {
+    nome: '',
+    tipologia: '',
+    numeroSerie: '',
+    dataInstallazione: '',
+    organizzazione: null,
+    contenitore: null
+  };
 
+  // Signals per la gestione degli stati grafici (esclusione e disabilitazione)
   selectedOrganizationId = signal<number | null>(null);
   selectedContainerId = signal<number | null>(null);
 
-  // 2. Adesso gestiamo l'oggetto singolo: creiamo un array con la sola organizzazione corrente
+  isOrganizationDisabled = computed(() => this.selectedContainerId() !== null);
+  isContainerDisabled = computed(() => this.selectedOrganizationId() !== null);
+
+// Sincronizzazione al cambio dell'organizzazione
+  onOrganizationChange(value: any) {
+    const id = (value === 'null' || value === null) ? null : Number(value);
+
+    this.attrezzatura.organizzazione = id ? { id: id } : null;
+
+    if (id !== null) {
+      this.selectedContainerId.set(null);
+      this.attrezzatura.contenitore = null; // Svuota il contenitore alternativo
+    }
+  }
+
+  // Sincronizzazione al cambio del contenitore
+  onContainerChange(value: any) {
+    const id = (value === 'null' || value === null) ? null : Number(value);
+
+    this.attrezzatura.contenitore = id ? { id: id } : null;
+
+    if (id !== null) {
+      this.selectedOrganizationId.set(null);
+      this.attrezzatura.organizzazione = null; // Svuota l'organizzazione alternativa
+    }
+  }
+
+  salva() {
+    this.http.post<any>(`http://localhost:8080/api/apparecchiatura`, this.attrezzatura)
+      .subscribe({
+        next: (res) => {
+          console.log('Salvataggio completato con successo!', res);
+          alert('Apparecchiatura salvata correttamente!');
+          this.resetForm()
+        },
+        error: (err) => {
+          console.error('Errore durante il salvataggio:', err);
+        }
+      });
+  }
+
+  resetForm() {
+    this.attrezzatura = {
+      nome: '',
+      tipologia: '',
+      numeroSerie: '',
+      dataInstallazione: '',
+      organizzazione: null,
+      contenitore: null
+    };
+
+    this.selectedOrganizationId.set(null);
+    this.selectedContainerId.set(null);
+  }
+
+  // --- Data Sourcing ---
   listaOrganizations = computed(() => {
-    const org = this.organizations();
-    if (!org) return [];
-
-    // Ritorniamo un array contenente solo l'organizzazione singola spacchettata
-    return [{
-      id: org.id,
-      nome: org.nome
-    }];
+    const orgs = this.organizations();
+    if (!orgs || !Array.isArray(orgs)) return [];
+    return orgs.map((org: any) => ({ id: org.id, nome: org.nome }));
   });
 
-  // 3. Estraiamo i contenitori direttamente dall'oggetto singolo senza flatMap
   listaContenitori = computed(() => {
-    const org = this.organizations();
-    if (!org || !org.contenitori) return [];
-
-    // Prendiamo l'array dei contenitori dell'unica organizzazione e ne mappiamo id e nome
-    return org.contenitori.map((cont: any) => ({
-      id: cont.id,
-      nome: cont.nome
-    }));
+    const orgs = this.organizations();
+    if (!orgs || !Array.isArray(orgs)) return [];
+    return orgs
+      .flatMap((org: any) => org.contenitori || [])
+      .map((cont: any) => ({ id: cont.id, nome: cont.nome }));
   });
-
 }

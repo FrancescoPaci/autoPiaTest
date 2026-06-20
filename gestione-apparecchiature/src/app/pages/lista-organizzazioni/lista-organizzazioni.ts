@@ -13,8 +13,8 @@ import { CreaAttrezzaturaComponent } from '../crea-attrezzatura/crea-attrezzatur
 })
 export class ListaOrganizzazioniComponent { // 🚀 1. Implementiamo OnInit per far partire la chiamata all'avvio
 
-  // Usiamo lo stile moderno con inject() al posto del costruttore classico
   private http = inject(HttpClient);
+  creaAttrezzatura = false
 
   organizations = httpResource<any[]>(() => `http://localhost:8080/api/organizzazioni`);
   organization = signal<any>(null);
