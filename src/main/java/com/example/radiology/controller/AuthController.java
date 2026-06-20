@@ -26,7 +26,7 @@ public class AuthController {
     @PostMapping("/login")
     public ResponseEntity<?> login(@RequestBody Map<String, String> loginRequest) {
         String username = loginRequest.get("username");
-        String password = loginRequest.get("password").trim();
+        String password = loginRequest.get("password");
 
         // 1. Cerca l'utente nel DB
         return utenteRepository.findByUsername(username)
@@ -37,7 +37,7 @@ public class AuthController {
                         // 3. Controlla se ha il ruolo ADMIN
                         if (utente.getRuoli().contains("ROLE_ADMIN")) {
                             // Per ora restituiamo il token demo come richiesto, ma solo se le credenziali sono corrette!
-                            return ResponseEntity.ok(Map.of("token", "demo-jwt", "ruolo", utente.getRuoli()));
+                            return ResponseEntity.ok(Map.of("token", "demo-jwt", "roles", utente.getRuoli()));
                         } else {
                             return ResponseEntity.status(HttpStatus.FORBIDDEN)
                                     .body(Map.of("error", "Accesso negato: Non hai i privilegi di amministratore."));

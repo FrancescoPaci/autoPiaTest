@@ -5,6 +5,7 @@ import com.example.radiology.repository.OrganizzazioneRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
 import java.util.Map;
 
 @RestController
@@ -25,5 +26,10 @@ public class ApparecchiaturaController {
         Organizzazione org = organizzazioneRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Organizzazione non trovata con id: " + id));
         return org;
+    }
+
+    @GetMapping("/organizzazioni")
+    public List<Organizzazione> getAllOrganizations() {
+        return organizzazioneRepository.findAll();
     }
 }

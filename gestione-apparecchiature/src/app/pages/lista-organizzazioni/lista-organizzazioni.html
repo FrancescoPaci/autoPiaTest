@@ -1,3 +1,25 @@
 <p>lista-organizzazioni works!</p>
 
-{{organizzazioni}}
+@if (organizationsResource.isLoading()) {
+<div class="loading-spinner">
+  <p>Caricamento organizzazioni in corso...</p>
+</div>
+}
+
+@else if (organizationsResource.error()) {
+<div class="error-message">
+  <p>Si è verificato un errore durante il recupero dei dati dal backend.</p>
+</div>
+}
+
+@else {
+<ul>
+  @for (org of organizationsResource.value(); track org.id) {
+  <li>
+    <strong>{{ org.nome }}</strong> - Codice: {{ org.id }}
+  </li>
+  } @empty {
+  <li>Non ci sono organizzazioni disponibili nel sistema.</li>
+  }
+</ul>
+}

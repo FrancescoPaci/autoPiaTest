@@ -1,5 +1,6 @@
 package com.example.radiology.entity;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import jakarta.persistence.*;
 import java.time.LocalDate;
 
@@ -26,21 +27,19 @@ public class Apparecchiatura {
     // Opzionale: valorizzato solo se l'apparecchiatura non è in un contenitore
     @ManyToOne
     @JoinColumn(name = "id_organizzazione", nullable = true)
+    // 🚀 EVITA LOOP JSON: Impedisce a Jackson di risalire verso l'organizzazione
+    @JsonIgnoreProperties({"apparecchiatureDirette", "contenitori"})
     private Organizzazione organizzazione;
 
     // Opzionale: valorizzato solo se l'apparecchiatura si trova dentro un contenitore.
-    // Poiché Contenitore ha una chiave composta (id_organizzazione, ordine), dobbiamo usare @JoinColumns.
-    // Tuttavia, dato che nel tuo script l'insert ha solo "id_contenitore = 1", significa che hai ridisegnato
-    // la FK o stai usando una colonna singola logica.
-    // Se la FK punta alla chiave composta del contenitore, la mappatura corretta è questa:
+    // 🚀 NOTA COME DIVENTA SEMPLICE: Ora punta all'ID singolo (Long) del nuovo Contenitore!
     @ManyToOne
-    @JoinColumns({
-            @JoinColumn(name = "id_organizzazione_contenitore", referencedColumnName = "id_organizzazione", nullable = true),
-            @JoinColumn(name = "id_contenitore", referencedColumnName = "ordine", nullable = true)
-    })
+    @JoinColumn(name = "id_contenitore", nullable = true)
+    // 🚀 EVITA LOOP JSON: Impedisce a Jackson di risalire verso il contenitore (e le altre sue apparecchiature)
+    @JsonIgnoreProperties({"apparecchiature", "organizzazione"})
     private Contenitore contenitore;
 
-    // Controllo di integrità prima di salvare nel DB
+    // Controllo di integrità prima di salvare nel DB (Rimane perfetto così com'è!)
     @PrePersist
     @PreUpdate
     private void validazioneEsclusivita() {
@@ -52,9 +51,10 @@ public class Apparecchiatura {
         }
     }
 
-    // Costruttori, Getter e Setter
+    // Costruttori
     public Apparecchiatura() {}
 
+    // Getter e Setter
     public Long getId() { return id; }
     public void setId(Long id) { this.id = id; }
 

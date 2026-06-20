@@ -9,10 +9,15 @@ export class AuthService {
 
   constructor(private http:HttpClient){}
 
-  login(username:string,password:string):Observable<any>{
-    return this.http.post<any>(`${this.api}/login`,{username,password})
-      .pipe(tap(r=>localStorage.setItem('token',r.token)));
-  }
+login(username: string, password: string): Observable<any> {
+  return this.http.post<any>(`${this.api}/login`, { username, password })
+    .pipe(
+      tap(r => {
+        localStorage.setItem('token', r.token);
+        localStorage.setItem('roles', r.roles);
+      })
+    );
+}
 
   logout():Observable<any>{
     localStorage.removeItem('token');

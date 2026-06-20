@@ -1,5 +1,6 @@
 package com.example.radiology.entity;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import jakarta.persistence.*;
 
 import java.util.LinkedHashSet;
@@ -17,10 +18,12 @@ public class Organizzazione {
 
     // Apparecchiature collegate DIRETTAMENTE all'organizzazione (dove id_contenitore è null)
     @OneToMany(mappedBy = "organizzazione")
+    @JsonIgnoreProperties("organizzazione")
     private Set<Apparecchiatura> apparecchiatureDirette = new LinkedHashSet<>();
 
     // Contenitori associati a questa organizzazione
     @OneToMany(mappedBy = "organizzazione")
+    @JsonIgnoreProperties("organizzazione")
     private Set<Contenitore> contenitori = new LinkedHashSet<>();
 
     // Costruttori, Getter e Setter
