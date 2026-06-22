@@ -1,55 +1,39 @@
-<p>Lista organizzazioni</p>
-
+<H1>Lista organizzazioni</H1>
 @if (organizations.isLoading()) {
 <div class="loading-spinner">
   <p>Caricamento organizzazioni in corso...</p>
 </div>
 }
-
 @else if (organizations.error()) {
 <div class="error-message">
   <p>Si è verificato un errore durante il recupero dei dati dal backend.</p>
 </div>
 }
-
 @else {
-<button class="btn btn-primary" (click)="creaAttrezzatura = !creaAttrezzatura">
-  Crea nuova apparecchiatura
-</button>
-@if (creaAttrezzatura) {
-<app-crea-attrezzatura [organizations]="organizations.value()"></app-crea-attrezzatura>
-}
-<ul>
-  @for (org of organizations.value(); track org.id) {
-  <li>
-    <strong>{{ org.nome }}</strong> -
-    <button class="btn btn-primary" (click)="loadTree(org.id)">
-      Carica Albero
-    </button>
-  </li>
-  } @empty {
-  <li>Non ci sono organizzazioni disponibili nel sistema.</li>
-  }
-</ul>
-}
-
-@if (organization(); as org) {
-<div class="organizzazione-container">
-  <h2>{{ org.nome }} (ID: {{ org.id }})</h2>
-  <hr>
-
-  <div class="row">
-
-    <div class="col-md-8">
+<div class="row">
+  <div class="col-md-8">
+    <ul>
+      @for (org of organizations.value(); track org.id) {
+      <li class="mb-1">
+        <strong>{{ org.nome }}</strong> -
+        <button class="btn btn-primary btn-sm" (click)="loadTree(org.id)">
+          Carica Albero
+        </button>
+      </li>
+      } @empty {
+      <li>Non ci sono organizzazioni disponibili nel sistema.</li>
+      }
+    </ul>
+    @if (organization(); as org) {
+    <div class="organizzazione-container">
+      <h2>{{ org.nome }} (ID: {{ org.id }})</h2>
       <h3>Contenitori</h3>
-
       @for (cont of org.contenitori; track cont.id; let i = $index) {
       <div class="card mb-3 shadow-sm border-primary" [style.paddingLeft.px]="i * 25">
         <div class="card-header bg-light">
           <strong>📦 {{ cont.nome }}</strong> (Ordine: {{ cont.ordine }})
         </div>
         <div class="card-body">
-
           <h5>Apparecchiature nel contenitore:</h5>
           @if (cont.apparecchiature && cont.apparecchiature.length > 0) {
           <ul class="list-group">
@@ -66,17 +50,14 @@
           } @else {
           <p class="text-muted small">Nessuna apparecchiatura in questo contenitore.</p>
           }
-
         </div>
       </div>
       } @empty {
       <p class="alert alert-warning">Nessun contenitore presente per questa organizzazione.</p>
       }
     </div>
-
     <div class="col-md-4">
       <h3>Apparecchiature Dirette</h3>
-
       @if (org.apparecchiatureDirette && org.apparecchiatureDirette.length > 0) {
       <ul class="list-group">
         @for (appDiretta of org.apparecchiatureDirette; track appDiretta.id) {
@@ -93,7 +74,15 @@
       </div>
       }
     </div>
-
+    }
+  </div>
+  <div class="col-md-4">
+    <button class="btn btn-primary btn-sm mb-2" (click)="creaAttrezzatura = !creaAttrezzatura">
+      Crea nuova apparecchiatura
+    </button>
+    @if (creaAttrezzatura) {
+    <app-crea-attrezzatura [organizations]="organizations.value()"></app-crea-attrezzatura>
+    }
   </div>
 </div>
 }
