@@ -65,7 +65,11 @@ attrezzatura: Apparecchiatura = {
           this.resetForm()
         },
         error: (err) => {
-          console.error('Errore durante il salvataggio:', err);
+          if(err.status === 403) {
+             alert('L\'utente non ha i permessi per eseguire l\'operazione');
+          } else {
+            alert('Operazione non riuscita');
+          }
         }
       });
   }
