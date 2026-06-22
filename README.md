@@ -11,3 +11,5 @@ per tirate su l'applicazione ci sono due modi:
 2) tirare su solo il BE
     - fare maven update e clean package del be e poi lanciare il main di spring boot
     - l'applicazione risponde all'url http://localhost:8080/
+
+Ci sono due utenti, uno con ruolo admin (admin/admin) e uno con ruolo user (user/user)

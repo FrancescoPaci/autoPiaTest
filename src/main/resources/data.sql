@@ -1,7 +1,7 @@
 INSERT INTO utenti (username, password, azienda, ruoli, attivo)
 VALUES ('admin', '$2a$10$qpPWvjFZMBlUWUERj0imMue6bvhhPLC3n7dzceoSOrhEmpoKoDglW', 'Azienda Demo', 'ROLE_ADMIN,ROLE_USER', true);
 INSERT INTO utenti (username, password, azienda, ruoli, attivo)
-VALUES ('user', 'pippo', 'Azienda Demo', 'ROLE_USER', true);
+VALUES ('user', '$2a$10$rypPP2rdtkFYGtNOlsb9x.M6lG1DEUOjVlBCSUNw0XWt7MVTs.pIS', 'Azienda Demo', 'ROLE_USER', true);
 
 -- 1. INSERIMENTO ORGANIZZAZIONI
 INSERT INTO organizzazione (id, nome)

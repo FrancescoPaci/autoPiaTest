@@ -37,6 +37,9 @@ public class AuthController {
         // 1. Cerca l'utente nel DB
         return utenteRepository.findByUsername(username)
                 .map(utente -> {
+
+                    //String passwordCriptata = passwordEncoder.encode(password);
+
                     // 2. Verifica se l'utente è attivo e se la password inserita coincide con l'hash BCrypt
                     if (utente.getAttivo() && passwordEncoder.matches(password, utente.getPassword().trim())) {
 
