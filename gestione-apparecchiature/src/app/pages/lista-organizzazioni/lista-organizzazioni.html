@@ -1,3 +1,4 @@
+<div class="p-1">
 <H1>Lista organizzazioni</H1>
 @if (organizations.isLoading()) {
 <div class="loading-spinner">
@@ -26,15 +27,15 @@
     </ul>
     @if (organization(); as org) {
     <div class="organizzazione-container">
-      <h2>{{ org.nome }} (ID: {{ org.id }})</h2>
-      <h3>Contenitori</h3>
+      <h4>{{ org.nome }} (ID: {{ org.id }})</h4>
+      <h5>Contenitori</h5>
       @for (cont of org.contenitori; track cont.id; let i = $index) {
       <div class="card mb-3 shadow-sm border-primary" [style.paddingLeft.px]="i * 25">
         <div class="card-header bg-light">
           <strong>📦 {{ cont.nome }}</strong> (Ordine: {{ cont.ordine }})
         </div>
         <div class="card-body">
-          <h5>Apparecchiature nel contenitore:</h5>
+          <h6>Apparecchiature nel contenitore:</h6>
           @if (cont.apparecchiature && cont.apparecchiature.length > 0) {
           <ul class="list-group">
             @for (app of cont.apparecchiature; track app.id) {
@@ -56,8 +57,8 @@
       <p class="alert alert-warning">Nessun contenitore presente per questa organizzazione.</p>
       }
     </div>
-    <div class="col-md-4">
-      <h3>Apparecchiature Dirette</h3>
+    <div>
+      <h5>Apparecchiature Dirette</h5>
       @if (org.apparecchiatureDirette && org.apparecchiatureDirette.length > 0) {
       <ul class="list-group">
         @for (appDiretta of org.apparecchiatureDirette; track appDiretta.id) {
@@ -86,3 +87,4 @@
   </div>
 </div>
 }
+</div>

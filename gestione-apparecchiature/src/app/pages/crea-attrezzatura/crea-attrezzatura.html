@@ -3,7 +3,7 @@
 
   <form (ngSubmit)="salva()" #apparecchiaturaForm="ngForm">
 
-    <table class="table-form">
+    <table class="table table-bordered">
       <tbody>
       <tr>
         <td colspan="2" style="font-weight: bold; font-size: 1.2rem; padding-bottom: 15px;">
@@ -14,14 +14,14 @@
       <tr>
         <td><label for="nome">Nome</label></td>
         <td>
-          <input type="text" id="nome" name="nome" [(ngModel)]="attrezzatura.nome" required>
+          <input type="text" id="nome" name="nome" class="input-group-text" [(ngModel)]="attrezzatura.nome" required>
         </td>
       </tr>
 
       <tr>
         <td><label for="tipologia">Tipologia</label></td>
         <td>
-          <select id="tipologia" name="tipologia" [(ngModel)]="attrezzatura.tipologia" required>
+          <select id="tipologia" name="tipologia" [(ngModel)]="attrezzatura.tipologia" required class="form-select">
             <option value="" disabled selected>Seleziona una tipologia...</option>
             <option value="TAC">TAC</option>
             <option value="Risonanza">Risonanza Magnetica</option>
@@ -35,14 +35,14 @@
       <tr>
         <td><label for="numeroSerie">Numero di Serie</label></td>
         <td>
-          <input type="text" id="numeroSerie" name="numeroSerie" [(ngModel)]="attrezzatura.numeroSerie" required>
+          <input type="text" id="numeroSerie" name="numeroSerie" class="input-group-text" [(ngModel)]="attrezzatura.numeroSerie" required>
         </td>
       </tr>
 
       <tr>
         <td><label for="dataInstallazione">Data di Installazione</label></td>
         <td>
-          <input type="date" id="dataInstallazione" name="dataInstallazione" [(ngModel)]="attrezzatura.dataInstallazione" required>
+          <input type="date" id="dataInstallazione" name="dataInstallazione" class="input-group-text" [(ngModel)]="attrezzatura.dataInstallazione" required>
         </td>
       </tr>
 
