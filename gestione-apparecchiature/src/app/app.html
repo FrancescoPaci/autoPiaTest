@@ -1,1 +1,9 @@
-<router-outlet />
+@if (token()) {
+  <button class="btn btn-primary btn-sm m-2" (click)="logout()">
+    Logout
+  </button>
+}
+<div>
+  <router-outlet />
+</div>
+

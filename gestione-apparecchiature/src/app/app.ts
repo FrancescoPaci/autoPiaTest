@@ -1,5 +1,6 @@
-import { Component, signal } from '@angular/core';
+import { Component, signal, computed, inject } from '@angular/core';
 import { RouterOutlet } from '@angular/router';
+import { AuthService } from './services/auth.service';
 
 @Component({
   selector: 'app-root',
@@ -8,5 +9,12 @@ import { RouterOutlet } from '@angular/router';
   styleUrl: './app.css'
 })
 export class App {
-  protected readonly title = signal('gestione-apparecchiature');
+
+  private readonly auth = inject(AuthService);
+  readonly token = computed(() => this.auth.isAuthenticated());
+
+  logout() {
+     this.auth.logout();
+  }
+
 }

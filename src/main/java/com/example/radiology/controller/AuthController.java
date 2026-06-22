@@ -59,11 +59,4 @@ public class AuthController {
                         .body(Map.of("error", "Utente non trovato")));
     }
 
-    @PostMapping("/logout")
-    public ResponseEntity<?> logout() {
-        // In un'architettura JWT stateless, basta rispondere con successo.
-        // Sarà il frontend Angular a cancellare il token dal browser.
-        return ResponseEntity.ok(Map.of("message", "Logout effettuato con successo"));
-    }
-
 }
