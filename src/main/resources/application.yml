@@ -20,3 +20,7 @@ spring:
   sql:
     init:
       mode: always
+application:
+  security:
+    jwt:
+      secret-key: "R0Y3bXpVbXNkd0NuN0Y1c0g4SjJrTmxwUXN0VndYVlozaDRzNnR3OHg5QT0="

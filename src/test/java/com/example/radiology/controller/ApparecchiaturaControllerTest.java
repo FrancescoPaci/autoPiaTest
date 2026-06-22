@@ -4,6 +4,7 @@ import com.example.radiology.entity.Apparecchiatura;
 import com.example.radiology.entity.Organizzazione;
 import com.example.radiology.repository.ApparecchiaturaRepository;
 import com.example.radiology.repository.OrganizzazioneRepository;
+import com.example.radiology.security.JwtService;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
@@ -39,9 +40,11 @@ class ApparecchiaturaControllerTest {
     @MockitoBean
     private OrganizzazioneRepository organizzazioneRepository;
 
+    @MockitoBean
+    private JwtService jwtService;
+
     @Test
-    @WithMockUser(username = "admin", roles = {"USER", "ADMIN"})
-        // 1. Simula un utente autenticato
+    @WithMockUser(username = "user", roles = "ADMIN")
     void testCreateApparecchiatura_Success() throws Exception {
         Apparecchiatura app = new Apparecchiatura();
         app.setNome("TAC Generale");
@@ -61,7 +64,7 @@ class ApparecchiaturaControllerTest {
 
     // --- TEST PER GET ALL ORGANIZZAZIONI ---
     @Test
-    @WithMockUser(username = "user")
+    @WithMockUser(username = "user", roles = "ADMIN")
     // 🚀 Simula l'utente autenticato per evitare il 403
     void testGetAllOrganizations_Success() throws Exception {
         Organizzazione org1 = new Organizzazione();
@@ -84,7 +87,7 @@ class ApparecchiaturaControllerTest {
 
     // --- TEST PER GET TREE (BY ID) ---
     @Test
-    @WithMockUser(username = "user")
+    @WithMockUser(username = "user", roles = "ADMIN")
     // 🚀 Simula l'utente autenticato per evitare il 403
     void testGetOrganizationTree_Success() throws Exception {
         Organizzazione org = new Organizzazione();
@@ -102,7 +105,7 @@ class ApparecchiaturaControllerTest {
 
     // --- TEST CASO DI ERRORE (404/500) ---
     @Test
-    @WithMockUser(username = "user")
+    @WithMockUser(username = "user", roles = "ADMIN")
     void testGetOrganizationTree_NotFound() {
         // Il controller si aspetta l'id 1 (come si legge dal log di errore), simuliamo l'Optional vuoto
         Mockito.when(organizzazioneRepository.findById(1L)).thenReturn(java.util.Optional.empty());

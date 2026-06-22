@@ -1,7 +1,7 @@
 package com.example.radiology.repository;
 
-import org.springframework.data.jpa.repository.*;
-import com.example.radiology.entity.*;
+import com.example.radiology.entity.Apparecchiatura;
+import org.springframework.data.jpa.repository.JpaRepository;
 
 public interface ApparecchiaturaRepository extends JpaRepository<Apparecchiatura, Long> {
 }

@@ -1,6 +1,7 @@
 package com.example.radiology.controller;
 
 import com.example.radiology.repository.UtenteRepository;
+import com.example.radiology.security.JwtService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -9,6 +10,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.util.List;
 import java.util.Map;
 
 @RestController
@@ -17,10 +19,14 @@ public class AuthController {
 
     private final UtenteRepository utenteRepository;
     private final PasswordEncoder passwordEncoder;
+    private final JwtService jwtService;
 
-    public AuthController(UtenteRepository utenteRepository, PasswordEncoder passwordEncoder) {
+    public AuthController(UtenteRepository utenteRepository,
+                          PasswordEncoder passwordEncoder,
+                          JwtService jwtService) {
         this.utenteRepository = utenteRepository;
         this.passwordEncoder = passwordEncoder;
+        this.jwtService = jwtService;
     }
 
     @PostMapping("/login")
@@ -34,14 +40,17 @@ public class AuthController {
                     // 2. Verifica se l'utente è attivo e se la password inserita coincide con l'hash BCrypt
                     if (utente.getAttivo() && passwordEncoder.matches(password, utente.getPassword().trim())) {
 
-                        // 3. Controlla se ha il ruolo ADMIN
-                        if (utente.getRuoli().contains("ROLE_ADMIN")) {
-                            // Per ora restituiamo il token demo come richiesto, ma solo se le credenziali sono corrette!
-                            return ResponseEntity.ok(Map.of("token", "demo-jwt", "roles", utente.getRuoli()));
-                        } else {
-                            return ResponseEntity.status(HttpStatus.FORBIDDEN)
-                                    .body(Map.of("error", "Accesso negato: Non hai i privilegi di amministratore."));
-                        }
+                        List<String> roles = java.util.Arrays.stream(utente.getRuoli().split(","))
+                                .map(String::trim)
+                                .toList();
+
+                        // 🚀 MODIFICA: Generiamo il vero JWT token firmato!
+                        String realJwtToken = jwtService.generateToken(utente.getUsername(), roles);
+
+                        return ResponseEntity.ok(Map.of(
+                                "token", realJwtToken,
+                                "roles", roles
+                        ));
                     }
                     return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
                             .body(Map.of("error", "Credenziali non valide"));

@@ -2,8 +2,15 @@ package com.example.radiology.entity;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import jakarta.persistence.*;
+import lombok.*;
+
 import java.time.LocalDate;
 
+@Getter
+@Setter
+@NoArgsConstructor
+@AllArgsConstructor
+@Builder
 @Entity
 @Table(name = "apparecchiatura")
 public class Apparecchiatura {
@@ -51,28 +58,4 @@ public class Apparecchiatura {
         }
     }
 
-    // Costruttori
-    public Apparecchiatura() {}
-
-    // Getter e Setter
-    public Long getId() { return id; }
-    public void setId(Long id) { this.id = id; }
-
-    public String getNome() { return nome; }
-    public void setNome(String nome) { this.nome = nome; }
-
-    public String getTipologia() { return tipologia; }
-    public void setTipologia(String tipologia) { this.tipologia = tipologia; }
-
-    public String getNumeroSerie() { return numeroSerie; }
-    public void setNumeroSerie(String numeroSerie) { this.numeroSerie = numeroSerie; }
-
-    public LocalDate getDataInstallazione() { return dataInstallazione; }
-    public void setDataInstallazione(LocalDate dataInstallazione) { this.dataInstallazione = dataInstallazione; }
-
-    public Organizzazione getOrganizzazione() { return organizzazione; }
-    public void setOrganizzazione(Organizzazione organizzazione) { this.organizzazione = organizzazione; }
-
-    public Contenitore getContenitore() { return contenitore; }
-    public void setContenitore(Contenitore contenitore) { this.contenitore = contenitore; }
 }
