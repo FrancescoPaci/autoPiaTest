@@ -1,33 +1,51 @@
-<div class="login-container">
-  <h2>Accedi al Sistema</h2>
+<div class="p-3">
+  <h2>Login</h2>
 
   <form (ngSubmit)="login()" #loginForm="ngForm">
+    <table class="table table-bordered" style="width: 400px;">
+      <tbody>
 
-    <div class="form-group">
-      <label for="username">Username</label>
-      <input
-        type="text"
-        id="username"
-        name="username"
-        [(ngModel)]="username"
-        required
-        placeholder="Inserisci il tuo username">
-    </div>
+      <tr>
+        <td style="vertical-align: middle;">
+          <label for="username">Username</label>
+        </td>
+        <td>
+          <input
+            type="text"
+            id="username"
+            name="username"
+            [(ngModel)]="username"
+            required
+            class="input-group-text"
+            placeholder="Inserisci il tuo username">
+        </td>
+      </tr>
 
-    <div class="form-group">
-      <label for="password">Password</label>
-      <input
-        type="password"
-        id="password"
-        name="password"
-        [(ngModel)]="password"
-        required
-        placeholder="Inserisci la tua password">
-    </div>
+      <tr>
+        <td style="vertical-align: middle;">
+          <label for="password">Password</label>
+        </td>
+        <td>
+          <input
+            type="password"
+            id="password"
+            name="password"
+            [(ngModel)]="password"
+            required
+            class="input-group-text"
+            placeholder="Inserisci la tua password">
+        </td>
+      </tr>
 
-    <button type="submit" [disabled]="!loginForm.form.valid" class="btn-login">
-      Login
-    </button>
+      <tr>
+        <td colspan="2" style="text-align: right;">
+          <button type="submit" class="btn-submit btn-sm" [disabled]="!loginForm.valid">
+            Login
+          </button>
+        </td>
+      </tr>
 
+      </tbody>
+    </table>
   </form>
 </div>
