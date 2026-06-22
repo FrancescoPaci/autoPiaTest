@@ -17,7 +17,7 @@
       @for (org of organizations.value(); track org.id) {
       <li class="mb-1">
         <strong>{{ org.nome }}</strong> -
-        <button class="btn btn-primary btn-sm" (click)="loadTree(org.id)">
+        <button class="btn btn-primary btn-sm" (click)="idOrganizzation.set(org.id)">
           Carica Albero
         </button>
       </li>
@@ -25,7 +25,7 @@
       <li>Non ci sono organizzazioni disponibili nel sistema.</li>
       }
     </ul>
-    @if (organization(); as org) {
+    @if (organization.value(); as org) {
     <div class="organizzazione-container">
       <h4>{{ org.nome }} (ID: {{ org.id }})</h4>
       <h5>Contenitori</h5>

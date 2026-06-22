@@ -60,7 +60,6 @@ attrezzatura: Apparecchiatura = {
     this.http.post<any>(`http://localhost:8080/api/apparecchiatura`, this.attrezzatura)
       .subscribe({
         next: (res) => {
-          console.log('Salvataggio completato con successo!', res);
           alert('Apparecchiatura salvata correttamente!');
           this.resetForm()
         },

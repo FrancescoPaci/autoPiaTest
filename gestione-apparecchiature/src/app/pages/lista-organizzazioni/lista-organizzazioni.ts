@@ -1,7 +1,5 @@
-import { Component, signal, ChangeDetectorRef, inject } from '@angular/core';
-import { HttpClient } from '@angular/common/http';
+import { Component, signal } from '@angular/core';
 import { httpResource } from '@angular/common/http';
-import { rxResource } from '@angular/core/rxjs-interop';
 import { CreaAttrezzaturaComponent } from '../crea-attrezzatura/crea-attrezzatura';
 
 @Component({
@@ -11,30 +9,32 @@ import { CreaAttrezzaturaComponent } from '../crea-attrezzatura/crea-attrezzatur
   templateUrl: './lista-organizzazioni.html',
   styleUrl: './lista-organizzazioni.css',
 })
-export class ListaOrganizzazioniComponent { // 🚀 1. Implementiamo OnInit per far partire la chiamata all'avvio
+export class ListaOrganizzazioniComponent {
 
-  private http = inject(HttpClient);
-  creaAttrezzatura = false
+  creaAttrezzatura = false;
 
+  // Risorsa per tutte le organizzazioni
   organizations = httpResource<any[]>(() => `http://localhost:8080/api/organizzazioni`);
-  organization = signal<any>(null);
-  private cdr = inject(ChangeDetectorRef);
 
-  loadTree(id: number) {
-    this.http.get<any>(`http://localhost:8080/api/organizzazioni/${id}/tree`).subscribe({
-      next: (res) => {
-        if (res && res.contenitori) {
+  // Cambiato l'unione del tipo a undefined per coerenza
+  idOrganizzation = signal<number | undefined>(undefined);
+
+  // 🚀 Esplicitiamo <any> qui per forzare l'oggetto finale a essere di tipo 'any'
+  organization = httpResource<any>(
+    () => {
+      const id = this.idOrganizzation();
+      if (!id) return undefined;
+
+      return {
+        url: `http://localhost:8080/api/organizzazioni/${id}/tree`,
+        transform: (res: any) => {
+          if (res?.contenitori) {
             res.contenitori.sort((a: any, b: any) => a.ordine - b.ordine);
+          }
+          return res;
         }
-        this.organization.set({ ...res });
-
-        // 3. 🚀 FORZA L'AGGIORNAMENTO: Dice ad Angular di ridisegnare la pagina ADESSO
-        this.cdr.detectChanges();
-
-        console.log('Albero caricato:', res);
-      },
-      error: (err) => console.error(err)
-    });
-  }
+      };
+    }
+  );
 
 }
