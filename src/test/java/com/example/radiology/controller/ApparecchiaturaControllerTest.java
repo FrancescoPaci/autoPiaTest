@@ -21,7 +21,6 @@ import java.util.List;
 import java.util.Optional;
 
 import static org.hamcrest.Matchers.hasSize;
-import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.csrf;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
@@ -59,7 +58,6 @@ class ApparecchiaturaControllerTest {
         Mockito.when(apparecchiaturaRepository.save(Mockito.any(Apparecchiatura.class))).thenReturn(app);
 
         mockMvc.perform(post("/api/apparecchiatura")
-                        .with(csrf())
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(app)))
                 // 🚀 ORA CI ASPETTIAMO UN 403 FORBIDDEN!
@@ -77,7 +75,6 @@ class ApparecchiaturaControllerTest {
         Mockito.when(apparecchiaturaRepository.save(Mockito.any(Apparecchiatura.class))).thenReturn(app);
 
         mockMvc.perform(post("/api/apparecchiatura")
-                        .with(csrf()) // 2. Inietta un token CSRF valido per superare il blocco 403
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(app)))
 
