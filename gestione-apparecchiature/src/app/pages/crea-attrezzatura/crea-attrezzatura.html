@@ -6,8 +6,8 @@
     <table class="table table-bordered">
       <tbody>
       <tr>
-        <td colspan="2" style="font-weight: bold; font-size: 1.2rem; padding-bottom: 15px;">
-          Nuova Apparecchiatura
+        <td colspan="2">
+          <h5>Nuova Apparecchiatura</h5>
         </td>
       </tr>
 
@@ -66,7 +66,6 @@
             id="organizzazione"
             name="organizzazione"
             class="form-select"
-            style="width: 100%;"
             [(ngModel)]="selectedOrganizationId"
             [disabled]="isOrganizationDisabled()"
             [required]="selectedContainerId() === null"
@@ -87,7 +86,6 @@
             id="contenitore"
             name="contenitore"
             class="form-select"
-            style="width: 100%;"
             [(ngModel)]="selectedContainerId"
             [disabled]="isContainerDisabled()"
             [required]="selectedOrganizationId() === null"
@@ -102,9 +100,9 @@
       </tr>
 
       <tr>
-        <td colspan="2" style="text-align: right; padding-top: 15px;">
+        <td colspan="2" class="text-end">
           <button type="submit" class="btn-submit btn-sm" [disabled]="!apparecchiaturaForm.valid">
-            Salva Apparecchiatura
+            Save
           </button>
         </td>
       </tr>

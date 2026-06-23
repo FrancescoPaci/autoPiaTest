@@ -1,51 +1,52 @@
-<div class="p-3">
-  <h2>Login</h2>
+<div class="row">
+  <div class="col-md-12 d-flex justify-content-center">
+    <form (ngSubmit)="login()" #loginForm="ngForm">
+      <h2 class="my-4 text-center">Login</h2>
+      <table class="table table-bordered">
+        <tbody>
 
-  <form (ngSubmit)="login()" #loginForm="ngForm">
-    <table class="table table-bordered" style="width: 400px;">
-      <tbody>
+        <tr>
+          <td class="align-middle">
+            <label for="username">Username</label>
+          </td>
+          <td>
+            <input
+              type="text"
+              id="username"
+              name="username"
+              [(ngModel)]="username"
+              required
+              class="input-group-text"
+              placeholder="Inserisci il tuo username">
+          </td>
+        </tr>
 
-      <tr>
-        <td style="vertical-align: middle;">
-          <label for="username">Username</label>
-        </td>
-        <td>
-          <input
-            type="text"
-            id="username"
-            name="username"
-            [(ngModel)]="username"
-            required
-            class="input-group-text"
-            placeholder="Inserisci il tuo username">
-        </td>
-      </tr>
+        <tr>
+          <td class="align-middle">
+            <label for="password">Password</label>
+          </td>
+          <td>
+            <input
+              type="password"
+              id="password"
+              name="password"
+              [(ngModel)]="password"
+              required
+              class="input-group-text"
+              placeholder="Inserisci la tua password">
+          </td>
+        </tr>
 
-      <tr>
-        <td style="vertical-align: middle;">
-          <label for="password">Password</label>
-        </td>
-        <td>
-          <input
-            type="password"
-            id="password"
-            name="password"
-            [(ngModel)]="password"
-            required
-            class="input-group-text"
-            placeholder="Inserisci la tua password">
-        </td>
-      </tr>
+        <tr>
+          <td colspan="2" class="text-end">
+            <button type="submit" class="btn-submit btn-sm" [disabled]="!loginForm.valid">
+              Login
+            </button>
+          </td>
+        </tr>
 
-      <tr>
-        <td colspan="2" style="text-align: right;">
-          <button type="submit" class="btn-submit btn-sm" [disabled]="!loginForm.valid">
-            Login
-          </button>
-        </td>
-      </tr>
-
-      </tbody>
-    </table>
-  </form>
+        </tbody>
+      </table>
+    </form>
+  </div>
 </div>

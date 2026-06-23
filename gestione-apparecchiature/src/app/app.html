@@ -1,9 +1,13 @@
-@if (token()) {
-  <button class="btn btn-primary btn-sm m-2" (click)="logout()">
-    Logout
-  </button>
-}
-<div>
-  <router-outlet />
+<div class="container-fluid">
+  <div class="row">
+    <div class="col-md-12 text-end">
+      @if (token()) {
+      <button class="btn btn-primary btn-sm my-2" (click)="logout()">
+        Logout
+      </button>
+      }
+    </div>
+  </div>
+    <router-outlet/>
 </div>
 
