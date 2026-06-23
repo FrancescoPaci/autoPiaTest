@@ -28,10 +28,9 @@ public class ApparecchiaturaController {
 
     @GetMapping("/organizzazioni/{id}/tree")
     public Organizzazione tree(@PathVariable Long id) {
-        // 1. Recupera l'organizzazione dal database
-        Organizzazione org = organizzazioneRepository.findById(id)
+        // Recupera l'organizzazione dal database
+        return organizzazioneRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Organizzazione non trovata con id: " + id));
-        return org;
     }
 
     @GetMapping("/organizzazioni")

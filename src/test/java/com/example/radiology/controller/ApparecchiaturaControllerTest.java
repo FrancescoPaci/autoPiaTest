@@ -5,11 +5,13 @@ import com.example.radiology.entity.Organizzazione;
 import com.example.radiology.repository.ApparecchiaturaRepository;
 import com.example.radiology.repository.OrganizzazioneRepository;
 import com.example.radiology.security.JwtService;
+import com.example.radiology.security.SecurityConfig;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
+import org.springframework.context.annotation.Import;
 import org.springframework.http.MediaType;
 import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
@@ -26,6 +28,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @WebMvcTest(ApparecchiaturaController.class)
+@Import(SecurityConfig.class) // 🚀 FORZA Spring a usare le tue vere regole di sicurezza!
 class ApparecchiaturaControllerTest {
 
     @Autowired
@@ -44,7 +47,27 @@ class ApparecchiaturaControllerTest {
     private JwtService jwtService;
 
     @Test
-    @WithMockUser(username = "user", roles = "ADMIN")
+    @WithMockUser(username = "user", roles = "USER")
+        // Utente normale senza privilegi ADMIN
+    void testCreateApparecchiatura_ShouldFail_WhenUserIsNotAdmin() throws Exception {
+        Apparecchiatura app = new Apparecchiatura();
+        app.setNome("TAC Generale");
+        app.setTipologia("TAC");
+        app.setNumeroSerie("SN-123456");
+
+        // Mockiamo comunque il comportamento del DB per sicurezza
+        Mockito.when(apparecchiaturaRepository.save(Mockito.any(Apparecchiatura.class))).thenReturn(app);
+
+        mockMvc.perform(post("/api/apparecchiatura")
+                        .with(csrf())
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(app)))
+                // 🚀 ORA CI ASPETTIAMO UN 403 FORBIDDEN!
+                .andExpect(status().isForbidden());
+    }
+
+    @Test
+    @WithMockUser(username = "admin", roles = "ADMIN")
     void testCreateApparecchiatura_Success() throws Exception {
         Apparecchiatura app = new Apparecchiatura();
         app.setNome("TAC Generale");
@@ -64,7 +87,7 @@ class ApparecchiaturaControllerTest {
 
     // --- TEST PER GET ALL ORGANIZZAZIONI ---
     @Test
-    @WithMockUser(username = "user", roles = "ADMIN")
+    @WithMockUser(username = "user", roles = "USER")
     // 🚀 Simula l'utente autenticato per evitare il 403
     void testGetAllOrganizations_Success() throws Exception {
         Organizzazione org1 = new Organizzazione();
@@ -87,8 +110,7 @@ class ApparecchiaturaControllerTest {
 
     // --- TEST PER GET TREE (BY ID) ---
     @Test
-    @WithMockUser(username = "user", roles = "ADMIN")
-    // 🚀 Simula l'utente autenticato per evitare il 403
+    @WithMockUser(username = "user", roles = "USER")
     void testGetOrganizationTree_Success() throws Exception {
         Organizzazione org = new Organizzazione();
         org.setId(10L);
@@ -105,7 +127,7 @@ class ApparecchiaturaControllerTest {
 
     // --- TEST CASO DI ERRORE (404/500) ---
     @Test
-    @WithMockUser(username = "user", roles = "ADMIN")
+    @WithMockUser(username = "user", roles = "USER")
     void testGetOrganizationTree_NotFound() {
         // Il controller si aspetta l'id 1 (come si legge dal log di errore), simuliamo l'Optional vuoto
         Mockito.when(organizzazioneRepository.findById(1L)).thenReturn(java.util.Optional.empty());
