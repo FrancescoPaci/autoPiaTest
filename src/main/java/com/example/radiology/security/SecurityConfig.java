@@ -12,6 +12,11 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
+import org.springframework.web.cors.CorsConfiguration;
+import org.springframework.web.cors.CorsConfigurationSource;
+import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
+
+import java.util.List;
 
 @Configuration
 @EnableWebSecurity
@@ -23,21 +28,22 @@ public class SecurityConfig {
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http
-                // 1. Abilita la configurazione CORS impostata in WebConfig
-                .cors(cors -> cors.configure(http))
-                // 2. Disabilita il CSRF (obbligatorio per le API REST)
+                .cors(cors -> cors.configurationSource(corsConfigurationSource()))
                 .csrf(AbstractHttpConfigurer::disable)
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS)) // Niente sessioni HTTP
                 .authorizeHttpRequests(auth -> auth
-                        // 🚀 REGOLA FONDAMENTALE: Accetta tutte le richieste OPTIONS di preflight del browser
-                        .requestMatchers(HttpMethod.OPTIONS, "/**").permitAll()
-
-                        // Tutte le tue altre regole esistenti...
+                        // 1. Asset statici e frontend (Pubblici)
                         .requestMatchers("/", "/index.html", "/favicon.ico", "/assets/**").permitAll()
                         .requestMatchers("/*.js", "/*.css", "/*.html").permitAll()
+                        // 2. Endpoint di autenticazione (Pubblici)
                         .requestMatchers("/api/utenti/login", "/auth/login").permitAll()
+                        // 3. Modifiche e creazioni (Solo ADMIN)
                         .requestMatchers(HttpMethod.POST, "/api/**").hasRole("ADMIN")
-                        .anyRequest().permitAll()
+                        .requestMatchers(HttpMethod.DELETE, "/api/**").hasRole("ADMIN")
+                        .requestMatchers(HttpMethod.PATCH, "/api/**").hasRole("ADMIN")
+                        .requestMatchers(HttpMethod.PUT, "/api/**").hasRole("ADMIN")
+                        // 4. Tutto il resto (es. Letture GET ecc.) richiede solo il Login
+                        .anyRequest().authenticated()
                 );
         http.addFilterBefore(jwtAuthFilter, UsernamePasswordAuthenticationFilter.class);
 
@@ -45,8 +51,24 @@ public class SecurityConfig {
     }
 
     @Bean
+    public CorsConfigurationSource corsConfigurationSource() {
+        CorsConfiguration configuration = new CorsConfiguration();
+        // Autorizza SOLO l'indirizzo del tuo frontend Angular
+        configuration.setAllowedOrigins(List.of("http://localhost:4200"));
+        // Autorizza i metodi HTTP che Angular userà (tutti)
+        configuration.setAllowedMethods(List.of("*"));
+        // Autorizza gli header (fondamentale "Authorization" per inviare il tuo JWT!)
+        configuration.setAllowedHeaders(List.of("Authorization", "Content-Type", "X-Requested-With"));
+        // Applica questa configurazione a tutte le rotte dell'applicazione (/api/**, ecc.)
+        UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
+        source.registerCorsConfiguration("/**", configuration);
+        return source;
+    }
+
+    @Bean
     public PasswordEncoder passwordEncoder() {
         // Usiamo BCrypt per verificare le password cifrate presenti nel tuo data.sql
         return new BCryptPasswordEncoder();
     }
+
 }
