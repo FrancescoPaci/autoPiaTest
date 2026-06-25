@@ -1,7 +1,7 @@
 @if (organizations()) {
 <div class="form-container">
 
-  <form (ngSubmit)="salva()" #apparecchiaturaForm="ngForm">
+  <form (ngSubmit)="save()" #apparecchiaturaForm="ngForm">
 
     <table class="table table-bordered">
       <tbody>
@@ -67,7 +67,7 @@
             name="organizzazione"
             class="form-select"
             [(ngModel)]="selectedOrganizationId"
-            [disabled]="isOrganizationDisabled()"
+            [disabled]="selectedContainerId() !== null"
             [required]="selectedContainerId() === null"
             (ngModelChange)="onOrganizationChange($event)">
 
@@ -87,7 +87,7 @@
             name="contenitore"
             class="form-select"
             [(ngModel)]="selectedContainerId"
-            [disabled]="isContainerDisabled()"
+            [disabled]="selectedOrganizationId() !== null"
             [required]="selectedOrganizationId() === null"
             (ngModelChange)="onContainerChange($event)">
 

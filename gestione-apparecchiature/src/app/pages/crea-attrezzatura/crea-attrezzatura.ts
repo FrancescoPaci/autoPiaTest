@@ -12,51 +12,38 @@ import { Apparecchiatura } from '../../models/apparecchiatura.model';
 })
 export class CreaAttrezzaturaComponent {
 
-  organizations = input<any>(null);
   private http = inject(HttpClient);
-
-  // 🚀 Il tuo oggetto inizializzato pronto a raccogliere i dati del form
-attrezzatura: Apparecchiatura = {
-    nome: '',
-    tipologia: '',
-    numeroSerie: '',
-    dataInstallazione: '',
-    organizzazione: null,
-    contenitore: null
-  };
-
-  // Signals per la gestione degli stati grafici (esclusione e disabilitazione)
+  organizations = input<any>(null);
   selectedOrganizationId = signal<number | null>(null);
   selectedContainerId = signal<number | null>(null);
+  attrezzatura: Apparecchiatura = {
+      nome: '',
+      tipologia: '',
+      numeroSerie: '',
+      dataInstallazione: '',
+      organizzazione: null,
+      contenitore: null
+  };
 
-  isOrganizationDisabled = computed(() => this.selectedContainerId() !== null);
-  isContainerDisabled = computed(() => this.selectedOrganizationId() !== null);
-
-// Sincronizzazione al cambio dell'organizzazione
   onOrganizationChange(value: any) {
-    const id = (value === 'null' || value === null) ? null : Number(value);
-
+    const id = Number.isInteger(value) ? Number(value) : null
     this.attrezzatura.organizzazione = id ? { id: id } : null;
-
-    if (id !== null) {
+    if(id) {
       this.selectedContainerId.set(null);
-      this.attrezzatura.contenitore = null; // Svuota il contenitore alternativo
+      this.attrezzatura.contenitore = null;
     }
   }
 
-  // Sincronizzazione al cambio del contenitore
   onContainerChange(value: any) {
-    const id = (value === 'null' || value === null) ? null : Number(value);
-
+    const id = Number.isInteger(value) ? Number(value) : null
     this.attrezzatura.contenitore = id ? { id: id } : null;
-
-    if (id !== null) {
+    if (id) {
       this.selectedOrganizationId.set(null);
-      this.attrezzatura.organizzazione = null; // Svuota l'organizzazione alternativa
+      this.attrezzatura.organizzazione = null;
     }
   }
 
-  salva() {
+  save() {
     this.http.post<any>(`http://localhost:8080/api/apparecchiatura`, this.attrezzatura)
       .subscribe({
         next: (res) => {
