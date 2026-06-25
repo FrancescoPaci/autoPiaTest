@@ -10,6 +10,7 @@
     <version>1</version>
     <properties>
         <java.version>21</java.version>
+        <frontend.skip>true</frontend.skip>
     </properties>
     <dependencies>
         <dependency>
@@ -89,6 +90,7 @@
                 <version>1.15.0</version>
 
                 <configuration>
+                    <skip>${frontend.skip}</skip>
                     <workingDirectory>${project.basedir}/gestione-apparecchiature</workingDirectory>
                     <installDirectory>${project.basedir}/gestione-apparecchiature</installDirectory>
                 </configuration>
