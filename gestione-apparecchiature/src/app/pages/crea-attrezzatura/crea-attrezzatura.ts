@@ -26,18 +26,20 @@ export class CreaAttrezzaturaComponent {
   };
 
   onOrganizationChange(value: any) {
-    const id = Number.isInteger(value) ? Number(value) : null
-    this.attrezzatura.organizzazione = id ? { id: id } : null;
-    if(id) {
+    const id = Number(value)
+    if (Number.isInteger(id)) {
+      this.attrezzatura.organizzazione = id ? { id: id } : null;
+    } else {
       this.selectedContainerId.set(null);
       this.attrezzatura.contenitore = null;
     }
   }
 
   onContainerChange(value: any) {
-    const id = Number.isInteger(value) ? Number(value) : null
-    this.attrezzatura.contenitore = id ? { id: id } : null;
-    if (id) {
+    const id = Number(value)
+    if (Number.isInteger(id)) {
+      this.attrezzatura.contenitore = id ? { id: id } : null;
+    } else {
       this.selectedOrganizationId.set(null);
       this.attrezzatura.organizzazione = null;
     }
