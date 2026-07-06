@@ -19,6 +19,37 @@ export class ListaOrganizzazioniComponent {
   // Cambiato l'unione del tipo a undefined per coerenza
   idOrganizzation = signal<number | undefined>(undefined);
 
+  // Tieni un riferimento all'EventSource per poterlo chiudere dopo
+    private eventSource?: EventSource;
+
+    ngOnInit() {
+      // Inizializza la connessione quando il componente viene creato
+      this.connectToStream();
+    }
+
+    private connectToStream() {
+      const token = localStorage.getItem('token');
+      // Uso nativo, nessun import richiesto
+      this.eventSource = new EventSource('http://localhost:8080/api/emitter-apparecchiatura');
+
+      this.eventSource.addEventListener('apparecchiatura-added', (event) => {
+          const seatData = JSON.parse(event.data);
+          this.organization.reload();
+      });
+      this.eventSource.onerror = (error) => {
+          console.error('Errore nella connessione SSE:', error);
+      };
+    }
+
+    ngOnDestroy() {
+      // ⚠️ FONDAMENTALE: Chiudi la connessione quando l'utente cambia pagina,
+      // altrimenti il browser lascerà il canale aperto all'infinito!
+      if (this.eventSource) {
+        this.eventSource.close();
+        console.log('Connessione SSE chiusa correttamente.');
+      }
+    }
+
   // 🚀 Esplicitiamo <any> qui per forzare l'oggetto finale a essere di tipo 'any'
   organization = httpResource<any>(
     () => {

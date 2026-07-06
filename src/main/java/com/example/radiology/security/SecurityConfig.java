@@ -37,6 +37,7 @@ public class SecurityConfig {
                         .requestMatchers("/*.js", "/*.css", "/*.html").permitAll()
                         // 2. Endpoint di autenticazione (Pubblici)
                         .requestMatchers("/api/utenti/login", "/auth/login").permitAll()
+                        .requestMatchers("/api/emitter-apparecchiatura").permitAll()
                         // 3. Modifiche e creazioni (Solo ADMIN)
                         .requestMatchers(HttpMethod.POST, "/api/**").hasRole("ADMIN")
                         .requestMatchers(HttpMethod.DELETE, "/api/**").hasRole("ADMIN")
