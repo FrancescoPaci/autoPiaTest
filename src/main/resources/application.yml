@@ -1,4 +1,7 @@
 spring:
+  threads:
+    virtual:
+      enabled: true
   docker:
     compose:
       enabled: false
@@ -12,7 +15,7 @@ spring:
     defer-datasource-initialization: true # Prima crea le tabelle, poi esegui data.sql
     hibernate:
       ddl-auto: update
-    show-sql: true
+    show-sql: false
   h2:
     console:
       enabled: true
@@ -24,3 +27,8 @@ application:
   security:
     jwt:
       secret-key: "R0Y3bXpVbXNkd0NuN0Y1c0g4SjJrTmxwUXN0VndYVlozaDRzNnR3OHg5QT0="
+logging:
+  pattern:
+    level: "%5p [%t]"
+  level:
+    org.hibernate.SQL: debug
