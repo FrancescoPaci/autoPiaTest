@@ -22,7 +22,7 @@ export class ListaOrganizzazioniComponent {
   }
 
   private connectToStream() {
-    this.eventSource = new EventSource('http://localhost:8080/api/emitter-apparecchiatura', {
+    this.eventSource = new EventSource('http://localhost:8080/api/notifications/subscribe', {
       withCredentials: true
     });
     this.eventSource.addEventListener('apparecchiatura-added', (event) => {
@@ -35,8 +35,9 @@ export class ListaOrganizzazioniComponent {
   }
 
   ngOnDestroy() {
-    // ⚠️ FONDAMENTALE: Chiudi la connessione quando l'utente cambia pagina,
+    // ⚠️ FONDAMENTALE: Chiude la connessione quando l'utente cambia pagina,
     // altrimenti il browser lascerà il canale aperto all'infinito!
+    // questo cancella solo lato FE, il BE li elimina o per timeout o quando li cicla
     if (this.eventSource) {
       this.eventSource.close();
     }
