@@ -2,6 +2,7 @@ package com.example.radiology.security;
 
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
+import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
@@ -29,17 +30,16 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
             @NonNull FilterChain filterChain
     ) throws ServletException, IOException {
 
-        final String authHeader = request.getHeader("Authorization");
-        final String jwt;
+        // 1. Estraiamo il JWT dal cookie invece che dall'header Authorization
+        final String jwt = parseJwt(request);
         final String username;
 
-        // Se non c'è l'header Bearer, passa oltre al prossimo filtro
-        if (authHeader == null || !authHeader.startsWith("Bearer ")) {
+        // Se il cookie non è presente o è vuoto, passa oltre al prossimo filtro
+        if (jwt == null || jwt.trim().isEmpty()) {
             filterChain.doFilter(request, response);
             return;
         }
 
-        jwt = authHeader.substring(7);
         try {
             username = jwtService.extractUsername(jwt);
 
@@ -47,7 +47,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
             if (username != null && SecurityContextHolder.getContext().getAuthentication() == null) {
 
                 if (jwtService.isTokenValid(jwt)) {
-                    // Estraiamo i ruoli direttamente dal JWT!
+                    // Estraiamo i ruoli direttamente dal JWT
                     List<SimpleGrantedAuthority> authorities = jwtService.extractAuthorities(jwt);
 
                     UsernamePasswordAuthenticationToken authToken = new UsernamePasswordAuthenticationToken(
@@ -63,9 +63,22 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
                 }
             }
         } catch (Exception e) {
-            // Se il token è manipolato o scaduto, il contesto rimane vuoto (403 Automatico)
+            // Se il token è manipolato o scaduto, il contesto rimane vuoto (401/403 Automatico)
         }
 
         filterChain.doFilter(request, response);
     }
+
+    // Il tuo metodo helper che ora viene richiamato all'inizio del filtro
+    private String parseJwt(HttpServletRequest request) {
+        if (request.getCookies() != null) {
+            for (Cookie cookie : request.getCookies()) {
+                if ("AUTH-TOKEN".equals(cookie.getName())) {
+                    return cookie.getValue();
+                }
+            }
+        }
+        return null;
+    }
+
 }

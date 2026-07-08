@@ -11,7 +11,7 @@ import { AuthService } from './services/auth.service';
 export class App {
 
   private readonly auth = inject(AuthService);
-  readonly token = computed(() => this.auth.isAuthenticated());
+  readonly isAuthenticated = computed(() => this.auth.isAuthenticated());
 
   logout() {
      this.auth.logout();

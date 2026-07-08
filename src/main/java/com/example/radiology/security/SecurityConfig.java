@@ -36,8 +36,7 @@ public class SecurityConfig {
                         .requestMatchers("/", "/index.html", "/favicon.ico", "/assets/**").permitAll()
                         .requestMatchers("/*.js", "/*.css", "/*.html").permitAll()
                         // 2. Endpoint di autenticazione (Pubblici)
-                        .requestMatchers("/api/utenti/login", "/auth/login").permitAll()
-                        .requestMatchers("/api/emitter-apparecchiatura").permitAll()
+                        .requestMatchers("/auth/login").permitAll()
                         // 3. Modifiche e creazioni (Solo ADMIN)
                         .requestMatchers(HttpMethod.POST, "/api/**").hasRole("ADMIN")
                         .requestMatchers(HttpMethod.DELETE, "/api/**").hasRole("ADMIN")
@@ -60,6 +59,7 @@ public class SecurityConfig {
         configuration.setAllowedMethods(List.of("*"));
         // Autorizza gli header (fondamentale "Authorization" per inviare il tuo JWT!)
         configuration.setAllowedHeaders(List.of("Authorization", "Content-Type", "X-Requested-With"));
+        configuration.setAllowCredentials(true); // <--- QUESTO PERMETTE I COOKIE
         // Applica questa configurazione a tutte le rotte dell'applicazione (/api/**, ecc.)
         UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
         source.registerCorsConfiguration("/**", configuration);

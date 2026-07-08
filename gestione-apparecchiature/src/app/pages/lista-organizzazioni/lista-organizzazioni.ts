@@ -28,10 +28,9 @@ export class ListaOrganizzazioniComponent {
     }
 
     private connectToStream() {
-      const token = localStorage.getItem('token');
-      // Uso nativo, nessun import richiesto
-      this.eventSource = new EventSource('http://localhost:8080/api/emitter-apparecchiatura');
-
+      this.eventSource = new EventSource('http://localhost:8080/api/emitter-apparecchiatura', {
+        withCredentials: true
+      });
       this.eventSource.addEventListener('apparecchiatura-added', (event) => {
           const seatData = JSON.parse(event.data);
           this.organization.reload();

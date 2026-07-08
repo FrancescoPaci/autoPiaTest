@@ -8,7 +8,7 @@ export class AuthService {
 
   private api='http://localhost:8080/auth';
 
-  readonly isAuthenticated = signal(!!localStorage.getItem('token'));
+  readonly isAuthenticated = signal(false);
 
   constructor(private http:HttpClient, private router: Router){}
 
@@ -16,7 +16,6 @@ export class AuthService {
     return this.http.post<any>(`${this.api}/login`, { username, password })
       .pipe(
         tap(r => {
-          localStorage.setItem('token', r.token);
           localStorage.setItem('roles', r.roles);
           this.isAuthenticated.set(true);
         })
@@ -24,11 +23,17 @@ export class AuthService {
   }
 
   logout() {
-    localStorage.removeItem('token');
-    this.isAuthenticated.set(false);
-    this.router.navigate(['/login']);
+    // Nota: l'interceptor aggiungerà automaticamente { withCredentials: true }
+    this.http.post(`${this.api}/logout`, {}).subscribe({
+      next: () => {
+        console.log('Cookie rimosso dal browser!');
+        this.isAuthenticated.set(false);
+        this.router.navigate(['/login']);
+      },
+      error: (err) => {
+        console.error('Errore durante il logout:', err);
+      }
+    });
   }
 
-  getToken(){ return localStorage.getItem('token'); }
-  isLogged(){ return !!this.getToken(); }
 }

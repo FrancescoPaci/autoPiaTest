@@ -2,7 +2,10 @@ package com.example.radiology.controller;
 
 import com.example.radiology.repository.UtenteRepository;
 import com.example.radiology.security.JwtService;
+import jakarta.servlet.http.HttpServletResponse;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseCookie;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -30,7 +33,7 @@ public class AuthController {
     }
 
     @PostMapping("/login")
-    public ResponseEntity<?> login(@RequestBody Map<String, String> loginRequest) {
+    public ResponseEntity<?> login(@RequestBody Map<String, String> loginRequest, HttpServletResponse response) {
         String username = loginRequest.get("username");
         String password = loginRequest.get("password");
 
@@ -48,18 +51,52 @@ public class AuthController {
                                 .toList();
 
                         // 🚀 MODIFICA: Generiamo il vero JWT token firmato!
-                        String realJwtToken = jwtService.generateToken(utente.getUsername(), roles);
+                        String jwtToken = jwtService.generateToken(utente.getUsername(), roles);
 
-                        return ResponseEntity.ok(Map.of(
-                                "token", realJwtToken,
-                                "roles", roles
-                        ));
+                        ResponseCookie cookie = createCookie(jwtToken);
+
+                        response.addHeader(HttpHeaders.SET_COOKIE, cookie.toString());
+
+                        return ResponseEntity.ok(Map.of("roles", roles));
                     }
                     return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
                             .body(Map.of("error", "Credenziali non valide"));
                 })
                 .orElse(ResponseEntity.status(HttpStatus.UNAUTHORIZED)
                         .body(Map.of("error", "Utente non trovato")));
+    }
+
+    private ResponseCookie createCookie(String jwtToken) {
+
+        // Se frontend e backend sono su domini/porte diverse (es. localhost:4200 e localhost:8080)
+        // è importante impostare SameSite=None (richiede anche Secure=true)
+        // Nota: l'oggetto Cookie standard di Java non ha setSameSite,
+        // quindi spesso si usa ResponseCookie di Spring:
+
+        return ResponseCookie.from("AUTH-TOKEN", jwtToken)
+                .httpOnly(true)
+                .secure(false) // impostare a false solo se si testa rigorosamente in HTTP locale senza HTTPS
+                .path("/")
+                .maxAge(86400)
+                .sameSite("Lax") // O "Lax" se sono sullo stesso identico dominio
+                .build();
+    }
+
+    @PostMapping("/logout")
+    public ResponseEntity<?> logout(HttpServletResponse response) {
+
+        // Creiamo un cookie "vuoto" con durata 0
+        ResponseCookie deleteCookie = ResponseCookie.from("AUTH-TOKEN", "")
+                .httpOnly(true)
+                .secure(false) // stesso valore usato nel login
+                .path("/")    // stesso path usato nel login
+                .maxAge(0)    // <--- QUESTO CANCELLA IL COOKIE IMMEDIATAMENTE
+                .sameSite("Lax")
+                .build();
+
+        response.addHeader(HttpHeaders.SET_COOKIE, deleteCookie.toString());
+
+        return ResponseEntity.ok(Map.of("msg", "Logout effettuato con successo e cookie rimosso"));
     }
 
 }
