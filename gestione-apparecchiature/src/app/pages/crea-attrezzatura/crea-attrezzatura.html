@@ -72,7 +72,7 @@
             (ngModelChange)="onOrganizationChange($event)">
 
             <option [ngValue]="null">Seleziona un'organizzazione...</option>
-            @for (org of listaOrganizations(); track org.id) {
+            @for (org of organizations(); track org.id) {
             <option [value]="org.id">{{ org.nome }}</option>
             }
           </select>
