@@ -1,7 +1,7 @@
 <div class="container-fluid">
   <div class="row">
     <div class="col-md-12 text-end">
-      @if (isAuthenticated()) {
+      @if (isLoggedIn()) {
       <button class="btn btn-primary btn-sm my-2" (click)="logout()">
         Logout
       </button>

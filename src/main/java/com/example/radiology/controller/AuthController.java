@@ -47,9 +47,11 @@ public class AuthController {
                         // 🚀 MODIFICA: Generiamo il vero JWT token firmato!
                         String jwtToken = jwtService.generateToken(utente.getUsername(), roles);
 
-                        ResponseCookie cookie = createCookie(jwtToken);
+                        ResponseCookie cookie = createCookie(jwtToken, 86400);
+                        ResponseCookie mirrorCookie = createMirrorCookie("true", 86400);
 
                         response.addHeader(HttpHeaders.SET_COOKIE, cookie.toString());
+                        response.addHeader(HttpHeaders.SET_COOKIE, mirrorCookie.toString());
 
                         return ResponseEntity.ok(Map.of("roles", roles));
                     }
@@ -60,37 +62,41 @@ public class AuthController {
                         .body(Map.of("error", "Utente non trovato")));
     }
 
-    private ResponseCookie createCookie(String jwtToken) {
+    @PostMapping("/logout")
+    public ResponseEntity<?> logout(HttpServletResponse response) {
 
+        ResponseCookie cookie = createCookie("", 0);
+        ResponseCookie mirrorCookie = createMirrorCookie("", 0);
+
+        response.addHeader(HttpHeaders.SET_COOKIE, cookie.toString());
+        response.addHeader(HttpHeaders.SET_COOKIE, mirrorCookie.toString());
+
+        return ResponseEntity.ok(Map.of("msg", "Logout effettuato con successo e cookie rimosso"));
+    }
+
+    private ResponseCookie createCookie(String jwtToken, int duration) {
         // Se frontend e backend sono su domini/porte diverse (es. localhost:4200 e localhost:8080)
         // è importante impostare SameSite=None (richiede anche Secure=true)
         // Nota: l'oggetto Cookie standard di Java non ha setSameSite,
         // quindi spesso si usa ResponseCookie di Spring:
-
         return ResponseCookie.from("AUTH-TOKEN", jwtToken)
                 .httpOnly(true)
                 .secure(false) // impostare a false solo se si testa rigorosamente in HTTP locale senza HTTPS
                 .path("/")
-                .maxAge(86400)
+                .maxAge(duration)
                 .sameSite("Lax") // O "Lax" se sono sullo stesso identico dominio
                 .build();
     }
 
-    @PostMapping("/logout")
-    public ResponseEntity<?> logout(HttpServletResponse response) {
-
-        // Creiamo un cookie "vuoto" con durata 0
-        ResponseCookie deleteCookie = ResponseCookie.from("AUTH-TOKEN", "")
-                .httpOnly(true)
-                .secure(false) // stesso valore usato nel login
-                .path("/")    // stesso path usato nel login
-                .maxAge(0)    // <--- QUESTO CANCELLA IL COOKIE IMMEDIATAMENTE
-                .sameSite("Lax")
+    private ResponseCookie createMirrorCookie(String value, int duration) {
+        // 2. COOKIE "SPECCHIO", Angular questo lo può vedere
+        return ResponseCookie.from("is-logged-in", value)
+                .httpOnly(false)
+                .secure(false) // impostare a false solo se si testa rigorosamente in HTTP locale senza HTTPS
+                .path("/")
+                .maxAge(duration)
+                .sameSite("Lax") // O "Lax" se sono sullo stesso identico dominio
                 .build();
-
-        response.addHeader(HttpHeaders.SET_COOKIE, deleteCookie.toString());
-
-        return ResponseEntity.ok(Map.of("msg", "Logout effettuato con successo e cookie rimosso"));
     }
 
 }

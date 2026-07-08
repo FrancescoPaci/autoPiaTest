@@ -8,26 +8,38 @@ export class AuthService {
 
   private api='http://localhost:8080/auth';
 
-  readonly isAuthenticated = signal(false);
+  public isLoggedIn = signal<boolean>(this.getCookie('is-logged-in') === 'true');
 
   constructor(private http:HttpClient, private router: Router){}
+
+  // Funzione nativa per leggere un cookie specifico
+  private getCookie(name: string): string | null {
+    const nameLenPlus = (name.length + 1);
+    return document.cookie
+      .split(';')
+      .map(c => c.trim())
+      .filter(cookie => {
+        return cookie.substring(0, nameLenPlus) === `${name}=`;
+      })
+      .map(cookie => {
+        return decodeURIComponent(cookie.substring(nameLenPlus));
+      })[0] || null;
+  }
 
   login(username: string, password: string): Observable<any> {
     return this.http.post<any>(`${this.api}/login`, { username, password })
       .pipe(
         tap(r => {
+          this.isLoggedIn.set(true);
           localStorage.setItem('roles', r.roles);
-          this.isAuthenticated.set(true);
         })
       );
   }
 
   logout() {
-    // Nota: l'interceptor aggiungerà automaticamente { withCredentials: true }
     this.http.post(`${this.api}/logout`, {}).subscribe({
       next: () => {
-        console.log('Cookie rimosso dal browser!');
-        this.isAuthenticated.set(false);
+        this.isLoggedIn.set(false);
         this.router.navigate(['/login']);
       },
       error: (err) => {
