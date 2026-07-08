@@ -8,6 +8,7 @@ import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.mvc.method.annotation.SseEmitter;
 
+import java.io.IOException;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.CopyOnWriteArrayList;
@@ -30,7 +31,7 @@ public class ApparecchiaturaController {
     @GetMapping(value = "/emitter-apparecchiatura", produces = MediaType.TEXT_EVENT_STREAM_VALUE)
     public SseEmitter inscribeToEventEmitter() {
         // Timeout di 10 minuti (600.000 ms)
-        SseEmitter emitter = new SseEmitter(600_000L);
+        SseEmitter emitter = new SseEmitter(180_000L);
         this.emitters.add(emitter);
         // Rimuovi l'emitter quando il client chiude la pagina o va in timeout
         emitter.onCompletion(() -> this.emitters.remove(emitter));
@@ -44,6 +45,9 @@ public class ApparecchiaturaController {
                 emitter.send(SseEmitter.event()
                         .name("apparecchiatura-added")
                         .data(apparecchiaturaId));
+            } catch (IOException e) {
+                System.out.println("Connessione interrotta dal client. Rimozione emitter.");
+                emitters.remove(emitter);
             } catch (Exception e) {
                 emitters.remove(emitter);
             }

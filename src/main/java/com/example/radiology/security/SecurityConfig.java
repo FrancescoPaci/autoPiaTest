@@ -32,6 +32,8 @@ public class SecurityConfig {
                 .csrf(AbstractHttpConfigurer::disable)
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS)) // Niente sessioni HTTP
                 .authorizeHttpRequests(auth -> auth
+                        // 🚀 FONDAMENTALE: Permetti le risposte asincrone (SSE)
+                        .dispatcherTypeMatchers(jakarta.servlet.DispatcherType.ASYNC).permitAll()
                         // 1. Asset statici e frontend (Pubblici)
                         .requestMatchers("/", "/index.html", "/favicon.ico", "/assets/**").permitAll()
                         .requestMatchers("/*.js", "/*.css", "/*.html").permitAll()
@@ -56,7 +58,7 @@ public class SecurityConfig {
         // Autorizza SOLO l'indirizzo del tuo frontend Angular
         configuration.setAllowedOrigins(List.of("http://localhost:4200"));
         // Autorizza i metodi HTTP che Angular userà (tutti)
-        configuration.setAllowedMethods(List.of("*"));
+        configuration.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE", "PATCH", "OPTIONS"));
         // Autorizza gli header (fondamentale "Authorization" per inviare il tuo JWT!)
         configuration.setAllowedHeaders(List.of("Authorization", "Content-Type", "X-Requested-With"));
         configuration.setAllowCredentials(true); // <--- QUESTO PERMETTE I COOKIE
