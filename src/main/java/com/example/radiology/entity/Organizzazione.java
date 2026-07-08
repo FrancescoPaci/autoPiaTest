@@ -25,11 +25,13 @@ public class Organizzazione {
     // Apparecchiature collegate DIRETTAMENTE all'organizzazione (dove id_contenitore è null)
     @OneToMany(mappedBy = "organizzazione")
     @JsonIgnoreProperties("organizzazione")
+    @OrderBy("id ASC")
     private Set<Apparecchiatura> apparecchiatureDirette = new LinkedHashSet<>();
 
     // Contenitori associati a questa organizzazione
     @OneToMany(mappedBy = "organizzazione")
     @JsonIgnoreProperties("organizzazione")
+    @OrderBy("ordine ASC")
     private Set<Contenitore> contenitori = new LinkedHashSet<>();
 
 }

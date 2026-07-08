@@ -36,6 +36,7 @@ public class Apparecchiatura {
     @JoinColumn(name = "id_organizzazione", nullable = true)
     // 🚀 EVITA LOOP JSON: Impedisce a Jackson di risalire verso l'organizzazione
     @JsonIgnoreProperties({"apparecchiatureDirette", "contenitori"})
+    @OrderBy("id ASC")
     private Organizzazione organizzazione;
 
     // Opzionale: valorizzato solo se l'apparecchiatura si trova dentro un contenitore.
@@ -44,6 +45,7 @@ public class Apparecchiatura {
     @JoinColumn(name = "id_contenitore", nullable = true)
     // 🚀 EVITA LOOP JSON: Impedisce a Jackson di risalire verso il contenitore (e le altre sue apparecchiature)
     @JsonIgnoreProperties({"apparecchiature", "organizzazione"})
+    @OrderBy("ordine ASC")
     private Contenitore contenitore;
 
     // Controllo di integrità prima di salvare nel DB (Rimane perfetto così com'è!)

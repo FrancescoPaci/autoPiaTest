@@ -32,9 +32,11 @@ public class Contenitore {
     @ManyToOne
     @JoinColumn(name = "id_organizzazione", nullable = false)
     @JsonIgnoreProperties({"contenitori", "apparecchiatureDirette"})
+    @OrderBy("id ASC")
     private Organizzazione organizzazione;
     @OneToMany(mappedBy = "contenitore")
     @JsonIgnoreProperties("contenitore")
+    @OrderBy("id ASC")
     private Set<Apparecchiatura> apparecchiature = new LinkedHashSet<>();
 
 }
