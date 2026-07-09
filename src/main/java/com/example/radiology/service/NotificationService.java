@@ -4,30 +4,40 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.servlet.mvc.method.annotation.SseEmitter;
 
 import java.io.IOException;
-import java.util.concurrent.CopyOnWriteArrayList;
+import java.util.Set;
+import java.util.concurrent.ConcurrentHashMap;
 
 @Service
 public class NotificationService {
 
     // 🚀 Tornati alla lista concorrente semplice e anonima
-    private final CopyOnWriteArrayList<SseEmitter> emitters = new CopyOnWriteArrayList<>();
+    private final Set<SseEmitter> emitters = ConcurrentHashMap.newKeySet();
 
     public SseEmitter subscribe() {
-        // ⏱️ Timeout a 3 minuti (180.000 ms) per evitare l'accumulo di connessioni morte
         SseEmitter emitter = new SseEmitter(180_000L);
 
-        this.emitters.add(emitter);
+        // 1. Quando scatta il timeout, completalo in modo pulito e rimuovilo dal Set
+        emitter.onTimeout(() -> {
+            emitter.complete(); // Chiude il canale in modo ordinato senza lanciare eccezioni distruttive
+            this.emitters.remove(emitter);
+        });
 
-        // Rimozione automatica dalla lista quando la connessione si chiude o va in timeout
+        // 2. Se si rompe la connessione per qualsiasi altro motivo di rete
+        emitter.onError(ex -> {
+            emitter.complete();
+            this.emitters.remove(emitter);
+        });
+
+        // 3. Rimuovilo anche se si completa normalmente
         emitter.onCompletion(() -> this.emitters.remove(emitter));
-        emitter.onTimeout(() -> this.emitters.remove(emitter));
 
+        this.emitters.add(emitter);
         return emitter;
     }
 
     public void broadcast(String eventName, Object data) {
         // Ciclo sicuro su tutti gli emitter attivi
-        for (SseEmitter emitter : emitters) {
+        for (SseEmitter emitter : this.emitters) {
             try {
                 emitter.send(SseEmitter.event()
                         .name(eventName)
