@@ -6,6 +6,7 @@ import com.example.radiology.repository.ApparecchiaturaRepository;
 import com.example.radiology.repository.OrganizzazioneRepository;
 import com.example.radiology.security.JwtService;
 import com.example.radiology.security.SecurityConfig;
+import com.example.radiology.service.NotificationService;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
@@ -21,6 +22,7 @@ import java.util.List;
 import java.util.Optional;
 
 import static org.hamcrest.Matchers.hasSize;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
@@ -45,9 +47,11 @@ class ApparecchiaturaControllerTest {
     @MockitoBean
     private JwtService jwtService;
 
+    @MockitoBean
+    private NotificationService notificationService;
+
     @Test
     @WithMockUser(username = "user", roles = "USER")
-        // Utente normale senza privilegi ADMIN
     void testCreateApparecchiatura_ShouldFail_WhenUserIsNotAdmin() throws Exception {
         Apparecchiatura app = new Apparecchiatura();
         app.setNome("TAC Generale");
@@ -85,7 +89,6 @@ class ApparecchiaturaControllerTest {
     // --- TEST PER GET ALL ORGANIZZAZIONI ---
     @Test
     @WithMockUser(username = "user", roles = "USER")
-    // 🚀 Simula l'utente autenticato per evitare il 403
     void testGetAllOrganizations_Success() throws Exception {
         Organizzazione org1 = new Organizzazione();
         org1.setId(1L);
@@ -105,7 +108,6 @@ class ApparecchiaturaControllerTest {
                 .andExpect(jsonPath("$[0].nome").value("Ospedale San Raffaele"));
     }
 
-    // --- TEST PER GET TREE (BY ID) ---
     @Test
     @WithMockUser(username = "user", roles = "USER")
     void testGetOrganizationTree_Success() throws Exception {
@@ -130,10 +132,9 @@ class ApparecchiaturaControllerTest {
         Mockito.when(organizzazioneRepository.findById(1L)).thenReturn(java.util.Optional.empty());
 
         // Intercettiamo la ServletException causata dalla RuntimeException cruda
-        org.junit.jupiter.api.Assertions.assertThrows(jakarta.servlet.ServletException.class, () -> {
-            mockMvc.perform(get("/api/organizzazioni/{id}/tree", 1L)
-                    .contentType(MediaType.APPLICATION_JSON));
-        });
+        assertThrows(jakarta.servlet.ServletException.class,
+                () -> mockMvc.perform(get("/api/organizzazioni/{id}/tree", 1L)
+                        .contentType(MediaType.APPLICATION_JSON)));
     }
 
 }

@@ -25,15 +25,20 @@ import java.util.Set;
 public class Contenitore {
     @Id
     private Long id;
+
     @Column(nullable = false)
     private String nome;
+
     @Column(nullable = false)
     private Integer ordine;
+
     @ManyToOne
     @JoinColumn(name = "id_organizzazione", nullable = false)
     @JsonIgnoreProperties({"contenitori", "apparecchiatureDirette"})
     @OrderBy("id ASC")
     private Organizzazione organizzazione;
+
+    @Builder.Default
     @OneToMany(mappedBy = "contenitore")
     @JsonIgnoreProperties("contenitore")
     @OrderBy("id ASC")
