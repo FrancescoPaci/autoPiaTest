@@ -1,6 +1,6 @@
-import { Component, signal } from '@angular/core';
-import { httpResource } from '@angular/common/http';
-import { CreaAttrezzaturaComponent } from '../crea-attrezzatura/crea-attrezzatura';
+import {Component, signal} from '@angular/core';
+import {httpResource} from '@angular/common/http';
+import {CreaAttrezzaturaComponent} from '../crea-attrezzatura/crea-attrezzatura';
 
 @Component({
   standalone: true,
@@ -25,8 +25,7 @@ export class ListaOrganizzazioniComponent {
     this.eventSource = new EventSource('http://localhost:8080/api/notifications/subscribe', {
       withCredentials: true
     });
-    this.eventSource.addEventListener('apparecchiatura-added', (event) => {
-        const seatData = JSON.parse(event.data);
+    this.eventSource.addEventListener('apparecchiatura-added', () => {
         this.organization.reload();
     });
     this.eventSource.onerror = (error) => {

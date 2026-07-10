@@ -1,7 +1,7 @@
-import { Component, input, computed, signal, inject } from '@angular/core';
-import { FormsModule } from '@angular/forms';
-import { HttpClient } from '@angular/common/http';
-import { Apparecchiatura } from '../../models/apparecchiatura.model';
+import {Component, computed, inject, input, signal} from '@angular/core';
+import {FormsModule} from '@angular/forms';
+import {HttpClient} from '@angular/common/http';
+import {Apparecchiatura} from '../../models/apparecchiatura.model';
 
 @Component({
   standalone: true,
@@ -17,18 +17,18 @@ export class CreaAttrezzaturaComponent {
   selectedOrganizationId = signal<number | null>(null);
   selectedContainerId = signal<number | null>(null);
   attrezzatura: Apparecchiatura = {
-      nome: '',
-      tipologia: '',
-      numeroSerie: '',
-      dataInstallazione: '',
-      organizzazione: null,
-      contenitore: null
+    nome: '',
+    tipologia: '',
+    numeroSerie: '',
+    dataInstallazione: '',
+    organizzazione: null,
+    contenitore: null
   };
 
   onOrganizationChange(value: any) {
     const id = Number(value)
     if (Number.isInteger(id)) {
-      this.attrezzatura.organizzazione = id ? { id: id } : null;
+      this.attrezzatura.organizzazione = id ? {id: id} : null;
     } else {
       this.selectedContainerId.set(null);
       this.attrezzatura.contenitore = null;
@@ -38,7 +38,7 @@ export class CreaAttrezzaturaComponent {
   onContainerChange(value: any) {
     const id = Number(value)
     if (Number.isInteger(id)) {
-      this.attrezzatura.contenitore = id ? { id: id } : null;
+      this.attrezzatura.contenitore = id ? {id: id} : null;
     } else {
       this.selectedOrganizationId.set(null);
       this.attrezzatura.organizzazione = null;
@@ -48,13 +48,13 @@ export class CreaAttrezzaturaComponent {
   save() {
     this.http.post<any>(`http://localhost:8080/api/apparecchiatura`, this.attrezzatura)
       .subscribe({
-        next: (res) => {
+        next: () => {
           alert('Apparecchiatura salvata correttamente!');
           this.resetForm()
         },
         error: (err) => {
-          if(err.status === 403) {
-             alert('L\'utente non ha i permessi per eseguire l\'operazione');
+          if (err.status === 403) {
+            alert('L\'utente non ha i permessi per eseguire l\'operazione');
           } else {
             alert('Operazione non riuscita');
           }
@@ -80,7 +80,7 @@ export class CreaAttrezzaturaComponent {
     if (!orgs || !Array.isArray(orgs)) return [];
     return orgs
       .flatMap((org: any) => org.contenitori || [])
-      .map((cont: any) => ({ id: cont.id, nome: cont.nome }));
+      .map((cont: any) => ({id: cont.id, nome: cont.nome}));
   });
 
 }

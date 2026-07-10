@@ -1,9 +1,8 @@
-
-import { Routes } from '@angular/router';
-import { LoginComponent } from './pages/login/login.component';
-import { ListaOrganizzazioniComponent } from './pages/lista-organizzazioni/lista-organizzazioni';
-import { UnauthorizedComponent } from './pages/unauthorized/unauthorized.component';
-import { authGuard } from './guards/auth.guard';
+import {Routes} from '@angular/router';
+import {LoginComponent} from './pages/login/login.component';
+import {ListaOrganizzazioniComponent} from './pages/lista-organizzazioni/lista-organizzazioni';
+import {UnauthorizedComponent} from './pages/unauthorized/unauthorized.component';
+import {authGuard} from './guards/auth.guard';
 
 export const routes: Routes = [
  {path:'login',component:LoginComponent},
